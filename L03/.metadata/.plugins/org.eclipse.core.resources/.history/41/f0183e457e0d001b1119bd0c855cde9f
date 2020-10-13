@@ -171,7 +171,7 @@ public class CourseRegApp {
 		}
 	}
 
-	public static ArrayList<Student> debugCreateStudents() {
+	public ArrayList<Student> debugCreateStudents() {
 
 		ArrayList<Student> stList = new ArrayList<Student>();
 
@@ -190,7 +190,7 @@ public class CourseRegApp {
 
 		CourseRegApp app = new CourseRegApp();
 		
-		ArrayList<Student> stList= debugCreateStudents();
+		ArrayList<Student> stList= app.debugCreateStudents();
 		
 		CourseCat cat = new CourseCat(); // This loads the courses from our "DB"
 
@@ -205,23 +205,23 @@ public class CourseRegApp {
 
 		}
 		
-		stList.get(0).registerForCourse(cat, "ENGG", 233, 1); // initial student registration for base requirement outputs Sare
+		
+		stList.get(0).registerForCourse(cat, "ENGG", 233, 1); // initial student registration for base requirement outputs
 		stList.get(0).registerForCourse(cat, "PHYS", 259, 2);
 
-		stList.get(1).registerForCourse(cat, "ENGG", 233, 3); // Joe
+		stList.get(1).registerForCourse(cat, "ENGG", 233, 3);
 		stList.get(1).registerForCourse(cat, "ENSF", 607, 4);
 
 		for (int i = 1; i < 9; i++) { // testing max allowable courses per student
-			stList.get(3).registerForCourse(cat, "WACK", Integer.parseInt("10" + i), 1); //DAVE
+			stList.get(3).registerForCourse(cat, "WACK", Integer.parseInt("10" + i), 1);
 		}
 
-		for (Student st : stList) { // testing min/max studentcap outputs for everyone.
+		for (Student st : stList) { // testing min/max studentcap outputs
 			st.registerForCourse(cat, "WACK", 102, 3);
 			st.registerForCourse(cat, "ENSF", 607, 1);
 		}
 
 		// testing with sara as current user. This would ideally be where the sign in page sends the user info into the front end.
-		// NOTE: success/failure messages not blocked during initialization for debug and demonstration.
 		app.Menu(cat, stList.get(0));
 	}
 

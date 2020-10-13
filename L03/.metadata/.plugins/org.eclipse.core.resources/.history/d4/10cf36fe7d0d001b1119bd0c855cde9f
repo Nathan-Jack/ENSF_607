@@ -171,28 +171,18 @@ public class CourseRegApp {
 		}
 	}
 
-	public static ArrayList<Student> debugCreateStudents() {
+	public static void main(String[] args) {
 
+		CourseCat cat = new CourseCat(); // This loads the courses from our "DB"
+		Student st1 = new Student("Sara", 1);
+		Student st2 = new Student("Joe", 2);
+		Student st3 = new Student("DAVE", 5);
 		ArrayList<Student> stList = new ArrayList<Student>();
 
-		stList.add(new Student("Sara", 1));
-		stList.add(new Student("Joe", 2));
-		stList.add(new Student("DAVE", 5));
-		
 		for (int i = 0; i < 10; i++) {
 			Student temp = new Student("Legion", i);
 			stList.add(temp);
 		}
-		return stList;
-	}
-
-	public static void main(String[] args) {
-
-		CourseRegApp app = new CourseRegApp();
-		
-		ArrayList<Student> stList= debugCreateStudents();
-		
-		CourseCat cat = new CourseCat(); // This loads the courses from our "DB"
 
 		// initializing course with default sections for testing
 		for (Course myCourse : cat.getCourseList()) {
@@ -204,25 +194,24 @@ public class CourseRegApp {
 			}
 
 		}
+		st1.registerForCourse(cat, "ENGG", 233, 1);
+		st1.registerForCourse(cat, "PHYS", 259, 2);
+
+		st2.registerForCourse(cat, "ENGG", 233, 3);
+		st2.registerForCourse(cat, "ENSF", 607, 4);
 		
-		stList.get(0).registerForCourse(cat, "ENGG", 233, 1); // initial student registration for base requirement outputs Sare
-		stList.get(0).registerForCourse(cat, "PHYS", 259, 2);
-
-		stList.get(1).registerForCourse(cat, "ENGG", 233, 3); // Joe
-		stList.get(1).registerForCourse(cat, "ENSF", 607, 4);
-
 		for (int i = 1; i < 9; i++) { // testing max allowable courses per student
-			stList.get(3).registerForCourse(cat, "WACK", Integer.parseInt("10" + i), 1); //DAVE
+			st3.registerForCourse(cat, "WACK", Integer.parseInt("10" + i), 1);
 		}
-
-		for (Student st : stList) { // testing min/max studentcap outputs for everyone.
-			st.registerForCourse(cat, "WACK", 102, 3);
-			st.registerForCourse(cat, "ENSF", 607, 1);
+		
+		for (Student st : stList) { // testing min/max studentcap outputs
+			st.registerForCourse(cat, "WACK",102,3);
+			st.registerForCourse(cat, "ENSF",607,1);
 		}
+		
+		CourseRegApp app = new CourseRegApp();
 
-		// testing with sara as current user. This would ideally be where the sign in page sends the user info into the front end.
-		// NOTE: success/failure messages not blocked during initialization for debug and demonstration.
-		app.Menu(cat, stList.get(0));
+		app.Menu(cat, st3);
 	}
 
 }

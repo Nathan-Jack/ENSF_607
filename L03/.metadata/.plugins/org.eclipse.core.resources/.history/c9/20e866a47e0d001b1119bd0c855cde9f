@@ -171,7 +171,7 @@ public class CourseRegApp {
 		}
 	}
 
-	public static ArrayList<Student> debugCreateStudents() {
+	public ArrayList<Student> debugCreateStudents() {
 
 		ArrayList<Student> stList = new ArrayList<Student>();
 
@@ -190,7 +190,7 @@ public class CourseRegApp {
 
 		CourseRegApp app = new CourseRegApp();
 		
-		ArrayList<Student> stList= debugCreateStudents();
+		ArrayList<Student> stList= app.debugCreateStudents();
 		
 		CourseCat cat = new CourseCat(); // This loads the courses from our "DB"
 
@@ -204,6 +204,7 @@ public class CourseRegApp {
 			}
 
 		}
+		
 		
 		stList.get(0).registerForCourse(cat, "ENGG", 233, 1); // initial student registration for base requirement outputs Sare
 		stList.get(0).registerForCourse(cat, "PHYS", 259, 2);
