@@ -1,0 +1,130 @@
+
+
+
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+/**
+ * Exercise 4 Code
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Sept 25, 2020
+ * 
+ *        Sources: Code base from D2L
+ *        Description:
+ *        Player object handles translating user input into board manipulation
+ *         Implements Constants to ensure consistent char usage.
+ */
+public class Player implements Constants {
+	/**
+	 * Player Name
+	 */
+	public String name;
+
+	/**
+	 * Player char from Constants
+	 */
+	public char letter;
+	public Board board;
+
+	/**
+	 * Player object for opponent
+	 */
+	private Player opponent;
+
+	/**
+	 * Creates player with name and sets char
+	 * @param name User input name String
+	 * @param letter Game defined X or O
+	 */
+	public Player(String name, char letter) {
+		this.name = name;
+		this.letter = letter;
+	}
+
+	/**
+	 * Connects players to board object
+	 * @param theBoard Board object
+	 */
+	public void setBoard(Board theBoard) {
+		this.board = theBoard;
+	}
+	
+	/**
+	 * Assigns opponent to this Player object
+	 * @param player Opponent Player object
+	 */
+	public void setOpponent(Player player) {
+		this.opponent = player;
+	}
+
+	/**
+	 * Main Play loop. While the win conditions haven't been met the following steps
+	 * occur 1. Board displayed 2. Player the play method was called on takes a turn
+	 * 3. Win conditions are checked for that player 4. Board is updated 5. Opponent
+	 * takes a turn 6. Check all win states and restart step 1 7. End State found,
+	 * display winner or Tie message based on result
+	 * 
+	 * @throws NumberFormatException see makeMove() method
+	 * @throws IOException           see makeMove() method
+	 */
+	public void play() throws NumberFormatException, IOException {
+		while (this.board.isFull() == false && this.board.oWins() == false && this.board.xWins() == false) {
+			this.board.display();
+			this.makeMove();
+
+			if (this.board.checkWinner(this.letter) == 1) {
+				this.board.display();
+				break;
+			}
+			this.board.display();
+			this.opponent.makeMove();
+		}
+		if (this.board.oWins() == true) {
+			System.out.println("THE GAME IS OVER: " + this.opponent.name + " is the winner!");
+			System.out.println("Game Ended...");
+		} else if (this.board.xWins() == true) {
+			System.out.println("THE GAME IS OVER: " + this.name + " is the winner!");
+			System.out.println("Game Ended...");
+		} else if (this.board.isFull() == true) {
+			System.out.println("Cats Game");
+		}
+
+	}
+
+	/**
+	 * Prompts user for input. Checks input for range validity. not for type. Add
+	 * char if space is empty, otherwise recursivly calls self and restarts turn for
+	 * player without changing board
+	 * 
+	 * @throws NumberFormatException for parseInt
+	 * @throws IOException           for IO input with bufferedreader.
+	 */
+	public void makeMove() throws NumberFormatException, IOException {
+		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println(this.name + ", enter the row for your next " + this.letter);
+		int row = Integer.parseInt(stdin.readLine());
+
+		System.out.println(this.name + ", enter the column for your next " + this.letter);
+		int col = Integer.parseInt(stdin.readLine());
+
+		if (0 > row || row > 2 || 0 > col || col > 2) {
+			System.out.println("Please enter a valid cell.");
+			this.makeMove();
+		} else {
+
+			char current = this.board.getMark(row, col);
+
+			if (current == SPACE_CHAR) {
+				this.board.addMark(row, col, this.letter);
+			} else {
+				System.out.println("Please enter a valid cell.");
+				this.makeMove();
+			}
+		}
+	}
+
+}

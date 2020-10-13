@@ -1,0 +1,27 @@
+import java.io.IOException;
+
+public class Referee {
+	public Player oPlayer;
+	public Player xPlayer;
+	public Board board;
+	
+	public void runTheGame() throws NumberFormatException, IOException {
+		this.xPlayer.setOpponent(this.oPlayer);
+		this.oPlayer.setOpponent(this.xPlayer);
+		this.xPlayer.play();
+	}
+
+	public void setBoard(Board theBoard) {
+		this.board = theBoard;		
+	}
+
+	public void setoPlayer(Player oPlayer) {
+		this.oPlayer = oPlayer;		
+	}
+
+	public void setxPlayer(Player xPlayer) {
+		this.xPlayer = xPlayer;		
+		
+	}
+
+}

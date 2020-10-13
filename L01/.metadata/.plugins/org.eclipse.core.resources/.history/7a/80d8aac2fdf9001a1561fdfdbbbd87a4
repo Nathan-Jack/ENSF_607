@@ -1,0 +1,32 @@
+package tree;
+
+public class TreeApp {
+	public static void main (String [] args) {
+		
+		System.out.println("Tree App");
+		
+		StudentTree myTree = new StudentTree();
+		
+		myTree.insert(new StudentNode ("Sarah", 10));
+		myTree.insert(new StudentNode ("Bob", 5));
+		myTree.insert(new StudentNode ("Sam", 2));
+		myTree.insert(new StudentNode ("Joe", 7));
+		
+		myTree.insert(new StudentNode ("a", 17));
+		myTree.insert(new StudentNode ("b", 12));
+		myTree.insert(new StudentNode ("c", 20));
+		
+		myTree.printPostOrder();
+		
+		myTree.search(myTree.getRoot(),10 );
+		
+		myTree.delete(myTree.getRoot(),20 );
+		
+		/*System.out.println(myTree.getRoot());
+		System.out.println(myTree.getRoot().getLeft());
+		System.out.println(myTree.getRoot().getRight());*/
+		
+		myTree.printPostOrder();
+	}
+
+}

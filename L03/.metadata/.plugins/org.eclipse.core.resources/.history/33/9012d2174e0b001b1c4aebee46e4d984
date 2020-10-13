@@ -1,0 +1,185 @@
+package courseRegistration;
+
+import java.util.Iterator;
+import java.util.Scanner;
+
+//This is my "FrontEnd!"
+public class CourseRegApp {
+
+	public CourseRegApp() {
+
+	}
+
+	public void Menu(CourseCat cat, Student st1) {
+		Scanner scan = new Scanner(System.in);
+
+		while (true) {
+
+			this.printMenuChoices();
+
+			Course myCourse = null;
+			String cName = null;
+			String cNum = null;
+			String choice = null;
+
+			while (choice == null) {
+				choice = this.sanitizeInput(scan.nextLine(), "menu");
+			}
+
+			switch (choice) {
+			case "1": { // Search course catalogue
+				System.out.println("Enter Course Name >> ");
+				while (cName == null) {
+					cName = scan.nextLine();
+				}
+				System.out.println("Enter Course number >> ");
+				while (cNum == null) {
+					cNum = this.sanitizeInput(scan.nextLine(), ""); // ensures input is positive or a string.
+				}
+				System.out.println(cat.searchCat(cName, Integer.parseInt(cNum)));
+
+				break;
+			}
+			case "2": { // add course to student
+				System.out.println("Please enter the name and number of course to be registered in >> \n");
+				System.out.println("Enter Course Name >> ");
+
+				while (cName == null) {
+					cName = scan.nextLine();
+				}
+				System.out.println("Enter Course number >> ");
+				while (cNum == null) {
+					cNum = this.sanitizeInput(scan.nextLine(), ""); // ensures input is positive or a string.
+				}
+
+				if (cat.searchCat(cName, Integer.parseInt(cNum)) == null) {
+					break;
+				} else {
+					st1.registerForCourse(cat, cName, Integer.parseInt(cNum), 0);
+				}
+				break;
+
+			}
+			case "3": { // remove course from student
+
+				st1.listAllCourses();
+				System.out.println("See above. Enter Course Name >> ");
+				while (cName == null) {
+					cName = scan.nextLine();
+				}
+				System.out.println("Enter Course number >> ");
+				while (cNum == null) {
+					cNum = this.sanitizeInput(scan.nextLine(), ""); // ensures input is positive or a string.
+				}
+
+				Course tempCourse = cat.searchCat(cName, Integer.parseInt(cNum));
+
+				if (tempCourse != null) {
+					int flag = 0;
+					for (Iterator<Registration> iterator = st1.getRegList().iterator(); iterator.hasNext();) {
+						Registration r = iterator.next();
+						if (r.getTheOffering().getTheCourse().getCourseName().compareTo(tempCourse.getCourseName()) == 0
+								&& r.getTheOffering().getTheCourse().getCourseNum() == tempCourse.getCourseNum()) {
+							iterator.remove();
+							System.out.println("Course Removed!");
+							flag = 1;
+						}
+					}
+
+					if (flag == 0) {
+						System.out.println("System could not remove course. returning to menu");
+						break;
+					}
+				}
+				break;
+
+			}
+			case "4": { // View all courses in catalogue
+				for (Iterator<Course> iterator = cat.getCourseList().iterator(); iterator.hasNext();) {
+					Course c = iterator.next();
+					System.out.println(c + "\n");
+				}
+				break;
+			}
+			case "5": { // View all courses taken by student
+				st1.listAllCourses();
+				break;
+
+			}
+			case "6": { // quit
+				System.out.println("Quitting");
+				scan.close();
+				return;
+			}
+
+			}
+
+		}
+	}
+
+	/**
+	 * Prints menu options list for user.
+	 */
+	private void printMenuChoices() {
+
+		System.out.println("\nWelcome to Course Registration. Please select one of the following options: ");
+		System.out.format("+-----------------+---------+----------+-----------+%n");
+		System.out.println("1. Search Course Catalogue");
+		System.out.println("2. Add course to student courses");
+		System.out.println("3. Remove course from student courses");
+		System.out.println("4. View all courses in catalogue");
+		System.out.println("5. View all courses taken by student");
+		System.out.println("6. Quit");
+		System.out.println("\nInput Selection >>");
+	}
+
+	private String sanitizeInput(String s, String menu) {
+
+		String errMsg = s + " Was an invalid input. Please try again >>";
+		if (s.isEmpty()) {
+			s = "nullEnter";
+			return s;
+		}
+		try {
+			int r = Integer.valueOf(s);
+			if (r < 0) { // no negative values allowed
+				System.out.println(errMsg);
+				return null;
+			}
+			if (menu.compareTo("menu") == 0) {
+				if (r > 0 && r < 7) {
+					return s;
+				} else {
+					System.out.println(errMsg);
+					return null;
+				}
+			} else {
+				return s;
+			}
+
+		} catch (NumberFormatException e) {
+			System.out.println(errMsg);
+			return null;
+		}
+	}
+
+	public static void main(String[] args) {
+
+		CourseCat cat = new CourseCat(); // This loads the courses from our "DB"
+		Student st1 = new Student("Sara", 1);
+		Student st2 = new Student("Joe", 2);
+
+		Course myCourse = cat.searchCat("ENGG", 233);
+		if (myCourse != null) {
+			cat.createOffering(myCourse, 1, 200);
+			cat.createOffering(myCourse, 2, 150);
+		}
+
+		st1.registerForCourse(cat, "ENGG", 233, 1);
+
+		CourseRegApp app = new CourseRegApp();
+
+		app.Menu(cat, st1);
+	}
+
+}

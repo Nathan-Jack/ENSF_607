@@ -1,0 +1,62 @@
+package BackEnd;
+
+public class Item {
+
+	private int toolID;
+	private String toolName;
+	private int qty;
+	private double price;
+	private String supplierID;
+
+	public Item() {
+		this.setToolID();
+		this.setToolName();
+		this.setQty();
+		this.setPrice();
+		this.setSupplierID();
+		
+	}
+
+	public int getToolID() {
+		return toolID;
+	}
+
+	public void setToolID(int toolID) {
+		this.toolID = toolID;
+	}
+
+	public String getToolName() {
+		return toolName;
+	}
+
+	public void setToolName(String toolName) {
+		this.toolName = toolName;
+	}
+
+	public int getQty() {
+		return qty;
+	}
+
+	public void setQty(int qty) {
+		this.qty = qty;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getSupplierID() {
+		return supplierID;
+	}
+
+	public void setSupplierID(String supplierID) {
+		this.supplierID = supplierID;
+	}
+	
+	
+	
+}

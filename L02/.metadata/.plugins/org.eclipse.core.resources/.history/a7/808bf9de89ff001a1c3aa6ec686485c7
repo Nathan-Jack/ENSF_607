@@ -1,0 +1,76 @@
+
+/**
+ * Exercise 4 Code
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Sept 25, 2020
+ * 
+ *        Sources: Code base from D2L
+ *        Description:
+ *         Game class contains the main function through which the game is
+ *         initialized. User is prompted for player names. Players, board, and
+ *         referee are created and assigned.
+ * 
+ *         Implements Constants to ensure homogenous console output and
+ *         comparisons across code.
+*/
+
+import java.io.*;
+
+//STUDENTS SHOULD ADD CLASS COMMENTS, METHOD COMMENTS, FIELD COMMENTS 
+
+public class Game implements Constants {
+
+	private Board theBoard;
+	private Referee theRef;
+
+	public Game() {
+		theBoard = new Board();
+	}
+
+	/**
+	 * 
+	 * @param r referee object
+	 * @throws IOException runthegame requires user input ie I/O functionality.
+	 */
+	public void appointReferee(Referee r) throws IOException {
+		theRef = r;
+		theRef.runTheGame();
+	}
+
+	public static void main(String[] args) throws IOException {
+		Referee theRef;
+		Player xPlayer, oPlayer;
+		BufferedReader stdin;
+		Game theGame = new Game();
+		stdin = new BufferedReader(new InputStreamReader(System.in));
+		System.out.print("\nPlease enter the name of the \'X\' player: ");
+		String name = stdin.readLine();
+		while (name == null) {
+			System.out.print("Please try again: ");
+			name = stdin.readLine();
+		}
+
+		xPlayer = new Player(name, LETTER_X);
+		xPlayer.setBoard(theGame.theBoard);
+
+		System.out.print("\nPlease enter the name of the \'O\' player: ");
+		name = stdin.readLine();
+		while (name == null) {
+			System.out.print("Please try again: ");
+			name = stdin.readLine();
+		}
+
+		oPlayer = new Player(name, LETTER_O);
+		oPlayer.setBoard(theGame.theBoard);
+
+		theRef = new Referee();
+		theRef.setBoard(theGame.theBoard);
+		theRef.setoPlayer(oPlayer);
+		theRef.setxPlayer(xPlayer);
+
+		theGame.appointReferee(theRef);
+	}
+
+}

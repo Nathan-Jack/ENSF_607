@@ -1,0 +1,51 @@
+package courseRegistration;
+
+public class Registration {
+	
+	private Student theStudent;
+	private Offering theOffering;
+	private char grade;
+	
+	public boolean register (Student theStudent, Offering theOffering) {
+		boolean flag = true;
+		setTheStudent (theStudent);
+		setTheOffering (theOffering);
+		addRegistration ();
+		if (theStudent.getRegList().contains(this) == false || theOffering.getStudentList().contains(theStudent) == false) {
+			flag = false;
+		}
+		return flag;
+	}
+
+	private void addRegistration() {
+		
+		theStudent.addRegistration(this);
+		theOffering.addRegistration(this);
+		
+	}
+
+	public Student getTheStudent() {
+		return theStudent;
+	}
+
+	public void setTheStudent(Student theStudent) {
+		this.theStudent = theStudent;
+	}
+
+	public Offering getTheOffering() {
+		return theOffering;
+	}
+
+	public void setTheOffering(Offering theOffering) {
+		this.theOffering = theOffering;
+	}
+
+	public char getGrade() {
+		return grade;
+	}
+
+	public void setGrade(char grade) {
+		this.grade = grade;
+	}
+
+}

@@ -1,0 +1,323 @@
+/**
+ * AVL/BST TREE class
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Sept 21, 2020
+ * 
+ * Sources:
+ * 	Code base from D2L/Dr. Moshipour
+ * 	Recursive search/insert functioned re-factored from https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
+ */
+
+package tree;
+
+public class StudentTree {
+
+	private StudentNode root;
+
+	public StudentTree() {
+		setRoot(null);
+	}
+
+	/**
+	 * Recursively navigates tree (or creates root) and inserts nodes according to
+	 * key value. After correct node is found calculate the balance of every node
+	 * traversed in the recursion and rotate according to balance value and height
+	 * of subtrees.
+	 * 
+	 * @param cursor current focus of scan. if children exist, move down according
+	 *               to key value
+	 * @param node   node to be inserted
+	 * @return returns root of re-balanced tree after insertion.
+	 */
+	public StudentNode insert(StudentNode cursor, StudentNode node) {
+
+		if (cursor == null)
+			return (new StudentNode(node.getName(), node.getId()));
+
+		int key = node.getId();
+		// making sure both left and right of the node are null
+		node.setLeft(null);
+		node.setRight(null);
+
+		if (root == null) // if new tree set new node as root.
+			root = node;
+		else {
+			// Traverse tree till leaf found. Do normal BST insertion
+			if (key < cursor.getId())
+				cursor.setLeft(insert(cursor.getLeft(), node));
+			else if (key > cursor.getId())
+				cursor.setRight(insert(cursor.getRight(), node));
+			else // Duplicate keys not allowed
+				return cursor;
+
+			// update heights of current node
+			updateHeight(cursor);
+
+			// check balance of current node
+			int balance = getBalance(cursor);
+
+			// if unbalanced try four cases to rotate
+			// Left Left Case
+			if (balance > 1 && getBalance(cursor.getLeft()) >= 0)
+				return rightRotate(cursor);
+
+			// Left Right Case
+			if (balance > 1 && getBalance(cursor.getLeft()) < 0) {
+				cursor.setLeft(leftRotate(cursor.getLeft()));
+				return rightRotate(cursor);
+			}
+
+			// Right Right Case
+			if (balance < -1 && getBalance(cursor.getRight()) <= 0)
+				return leftRotate(cursor);
+
+			// Right Left Case
+			if (balance < -1 && getBalance(cursor.getRight()) > 0) {
+				cursor.setRight(rightRotate(cursor.getRight()));
+				return leftRotate(cursor);
+			}
+
+			// return node if no rotations required
+			return cursor;
+		}
+		return cursor;
+
+	}
+
+	public void printPreOrder() {
+		TraversePreOrder(getRoot());
+	}
+
+	public void printInOrder() {
+		TraverseInOrder(getRoot());
+	}
+
+	public void printPostOrder() {
+		TraversePostOrder(getRoot());
+	}
+
+	private void TraversePreOrder(StudentNode cursor) { // Node, left subtree, right subtree
+
+		if (cursor != null) {
+			System.out.println(cursor);
+			TraverseInOrder(cursor.getLeft());
+			TraverseInOrder(cursor.getRight());
+		}
+	}
+
+	private void TraverseInOrder(StudentNode cursor) { // Nodes in ascending order
+
+		if (cursor != null) {
+
+			TraverseInOrder(cursor.getLeft());
+			System.out.println(cursor);
+			TraverseInOrder(cursor.getRight());
+		}
+	}
+
+	private void TraversePostOrder(StudentNode cursor) { // Left, right, node
+		if (cursor != null) {
+
+			TraverseInOrder(cursor.getLeft());
+			TraverseInOrder(cursor.getRight());
+			System.out.println(cursor);
+		}
+	}
+
+	// added to BST tree by NJ
+	/**
+	 *  traverses tree based on key values recursively. Does not search entire tree.
+	 * @param cursor Current node in scan
+	 * @param key key to be found
+	 * @return returns found node or null.
+	 */
+	public StudentNode search(StudentNode cursor, int key) {
+		// To be completed by Students!
+		// Completed -NJ
+		if (cursor == null || cursor.getId() == key)
+			return cursor;
+		if (key < cursor.getId())
+			return search(cursor.getLeft(), key);
+
+		return search(cursor.getRight(), key);
+	}
+
+	/**
+	 * deletes passed key and recreates tree using next valid value
+	 * 
+	 * @param cursor current node in scan. must equal key before actual delete code will run
+	 * @param key key of node to be deleted
+	 * @return returns root of new BST Tree after deletion (ACCORING TO INSTRUCTIONS DOES NOT RETURN AVL TREE)
+	 * 
+	 */
+	public StudentNode delete(StudentNode cursor, int key) {
+
+		// To be completed by students!
+		// Completed by NJ
+
+		// notify user of invalid key if key not in tree
+		if (this.search(cursor, key) == null) {
+			System.out.println("Key not in tree\n");
+			return cursor;
+			}
+		
+		// recursive call to find node to delete while maintaining path to root.
+		if (cursor == null) // if tree only has one node, recursive call stops here
+			return cursor;
+
+		// If the key to be deleted is smaller than
+		// the root's key, then it lies in left subtree
+		if (key < cursor.getId())
+			cursor.setLeft(delete(cursor.getLeft(), key));
+
+		// If the key to be deleted is greater than the
+		// root's key, then it lies in right subtree
+		else if (key > cursor.getId())
+			cursor.setRight(delete(cursor.getRight(), key));
+
+		else {
+			// delete has three cases, no children, one child, two children.
+
+			// single or no child node
+			if ((cursor.getLeft() == null) || (cursor.getRight() == null)) {
+				StudentNode temp = null;
+				if (temp == cursor.getLeft()) // null
+					temp = cursor.getRight();
+				else
+					temp = cursor.getLeft();
+
+				// No child case (leaf node)
+				if (temp == null) {
+					temp = cursor;
+					cursor = null; // delete current node
+				} else // One child case
+					cursor = temp; // Copy the contents of the child, overwriting value to be deleted.
+			} else {
+				// two children: find the smallest node in subtree below to take place
+				// of deleted node
+				StudentNode temp = minValueNode(cursor.getRight());
+
+				// Copy the min value node data to current
+				cursor.setId(temp.getId());
+				cursor.setName(temp.getName());
+
+				// Delete the leaf node at the bottom of the tree chosen by minValueNode.
+				cursor.setRight(delete(cursor.getRight(), temp.getId()));
+			}
+		}
+
+		if (cursor == null) // if key not in tree or tree only has one node
+			return cursor;
+
+		// for AVL Tree add balancing and rotation calls here. Other wise return cursor
+		return cursor;
+
+	}
+
+	public StudentNode getRoot() {
+		return root;
+	}
+
+	public void setRoot(StudentNode root) {
+		this.root = root;
+	}
+
+	public StudentNode minValueNode(StudentNode node) {
+		StudentNode cursor = node;
+
+		// find smallest value in subtree passed.
+		while (cursor.getLeft() != null)
+			cursor = cursor.getLeft();
+
+		return cursor;
+	}
+
+	// Max between two integers ()
+	public int max(int a, int b) {
+		if (a < b)
+			return a;
+		else
+			return b;
+	}
+
+	// Right rotates subtree with root at y
+	public StudentNode rightRotate(StudentNode y) {
+		// Step 1: Rotate chosen nodes
+		// Step 2: Update heights of all changed nodes
+		// Step 3: return new root of subtree after rotation
+
+		StudentNode x = y.getLeft();
+		StudentNode temp = x.getRight();
+
+		// Step 1
+		x.setRight(y);
+		y.setLeft(temp);
+
+		// Step 2
+		updateHeight(y);
+		updateHeight(x);
+
+		// Step 3
+		return x;
+	}
+
+	// Left rotates subtree with root at x. Same steps as right rotate.
+	public StudentNode leftRotate(StudentNode x) {
+		StudentNode y = x.getRight();
+		StudentNode temp = y.getLeft();
+
+		y.setLeft(x);
+		x.setRight(temp);
+
+		updateHeight(x);
+		updateHeight(y);
+
+		return y;
+	}
+
+	// Get Balance factor of passed node
+	public int getBalance(StudentNode node) {
+		if (node == null)
+			return 0;
+
+		int heightL;
+		int heightR;
+		// if Node passed has a null child that height is zero.
+		try {
+			heightL = node.getLeft().getHeight();
+		} catch (NullPointerException e) {
+			heightL = 0;
+		}
+
+		try {
+			heightR = node.getRight().getHeight();
+		} catch (NullPointerException e) {
+			heightR = 0;
+		}
+
+		return (heightL - heightR);
+	}
+
+	// updates heights, must use utility function to catch null children nodes.
+	public void updateHeight(StudentNode node) {
+		int heightL;
+		int heightR;
+		try {
+			heightL = node.getLeft().getHeight();
+		} catch (NullPointerException e) {
+			heightL = 0;
+		}
+
+		try {
+			heightR = node.getRight().getHeight();
+		} catch (NullPointerException e) {
+			heightR = 0;
+		}
+
+		node.setHeight(1 + max(heightL, heightR));
+		return;
+	}
+
+}

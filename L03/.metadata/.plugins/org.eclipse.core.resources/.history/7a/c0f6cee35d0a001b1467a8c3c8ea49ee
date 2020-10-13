@@ -1,0 +1,203 @@
+package FrontEnd;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+import BackEnd.*;
+import java.util.Scanner;
+
+public class ShopApp {
+
+	private ShopDatabase inventory;
+	private LinkedHashSet<Supplier> supplierList;
+	private HashMap<Integer, Order> orderlist;
+	private FileManager fileMgr;
+
+	public ShopApp() throws IOException {
+		this.fileMgr = new FileManager("items.txt", "suppliers.txt");
+		this.inventory = new ShopDatabase();
+	}
+
+	public void Menu() {
+
+		Scanner scan = new Scanner(System.in);
+
+		while (true) {
+
+			this.printMenuChoices();
+
+			String choice = null;
+			while (choice == null) {
+				choice = this.sanitizeInput(scan.nextLine(), "menu");
+			}
+
+			switch (choice) {
+			case "1": { // list all items
+				this.inventory.listAllItems();
+				break;
+			}
+			case "2": { // Search by name
+				System.out.println("Enter Tool Name >> ");
+				this.inventory.searchByName((scan.nextLine()));
+				break;
+			}
+			case "3": { // search by id
+				System.out.println("Enter Tool ID >> ");
+				String input = null;
+				while (input == null) {
+					input = this.sanitizeInput(scan.nextLine(), "");
+				}
+				this.inventory.searchByID(input);
+				break;
+
+			}
+			case "4": { // check item qty (auto order if below certain value)
+				System.out.println("Check Quantity Item by ID or Name >> ");
+				String input = (scan.nextLine());
+				this.inventory.checkQty(input);
+				this.inventory.returnItem(input);
+				if(this.inventory.returnItem(input).getQty() < Item.getOrderqtylimit()) {
+					this.generateOrder(input);
+					this.printOrderList();
+				}
+				break;
+			}
+			case "5": { // decrease item quantity
+				System.out.println("Decrease stock of an item. Enter an ID or Name >> ");
+				String input = scan.nextLine();
+				System.out.println("Enter value to decrease by or hit enter to decrease by one >> ");
+				String qty = this.sanitizeInput(scan.nextLine(), "");
+				if (qty != null) {
+					this.inventory.decreaseItem(input, qty);
+					if(this.inventory.returnItem(input).getQty() < Item.getOrderqtylimit()) {
+						this.generateOrder(input);
+						this.printOrderList();
+					}
+				}
+				break;
+				
+			}
+			case "6": {
+				scan.close();
+				return;
+			}
+
+			}
+
+		}
+	}
+
+	private void printMenuChoices() {
+
+		System.out.println("Welcome to theShopApp, please select one of the following options: ");
+		System.out.format("+-----------------+---------+----------+-----------+%n");
+		System.out.println("1. List all tools.items in inventory");
+		System.out.println("2. Search for tool by tool name");
+		System.out.println("3. Search for tool by tool ID");
+		System.out.println("4. Check item quantity");
+		System.out.println("5. Decrease item quantity");
+		System.out.println("6. Quit");
+		System.out.println("\nInput Selection >>");
+	}
+
+	private String sanitizeInput(String s, String menu) {
+
+		String errMsg = s + " Was an invalid input. Please try again >>";
+		if (s.isEmpty()) {
+			s = "nullEnter";
+			return s;
+
+		}
+		try {
+			int r = Integer.valueOf(s);
+			if (r < 0) { // no negative values allowed
+				System.out.println(errMsg);
+				return null;
+			}
+			if (menu.compareTo("menu") == 0) {
+				if (r > 0 && r < 7) {
+					return s;
+				} else {
+					System.out.println(errMsg);
+					return null;
+				}
+			} else {
+				return s;
+			}
+
+		} catch (NumberFormatException e) {
+			System.out.println(errMsg);
+			return null;
+		}
+	}
+
+	private void setSupplierList(LinkedHashSet<Supplier> sList) {
+		this.supplierList = sList;
+	}
+
+	private String getSupplierName(String supplierID) {
+		Iterator<Supplier> itr = this.supplierList.iterator();
+		while (itr.hasNext()) {
+			Supplier sup = itr.next();
+			if (sup.getSupplierID().strip().compareTo(supplierID.strip()) == 0) {
+				return sup.getCompanyName();
+			}
+		}
+		return null;
+
+	}
+
+	private void generateOrder(String input) {
+		int Hash = this.generateOrderID(input);
+		if (this.orderlist.containsKey(Hash) == false) {
+			Order newOrder = new Order(this.inventory.returnItem(input),
+				this.getSupplierName(this.inventory.returnItem(input).getSupplierID()),Hash);
+			this.addToOrderList(Hash, newOrder);
+		}
+		else {System.out.println("Item has already been ordered today\n");}
+	}
+	
+	private int generateOrderID(String input) {
+		LocalDate now = LocalDate.now();
+		LocalDate epoch = LocalDate.ofEpochDay(0);
+		long dateHash = ChronoUnit.DAYS.between(epoch, now);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((int) dateHash);
+		result = prime * result + (int) (this.inventory.returnItem(input).getToolID() ^ (this.inventory.returnItem(input).getToolID() >>> 32));
+		return result = result % 100000; // returns between 00000-99999
+	}
+
+	private void printOrderList() {
+		 this.orderlist.entrySet().forEach(entry->{
+			    System.out.println(entry.getValue().getOrderString() + "\n");  
+			 });
+	}
+
+	private void addToOrderList(int orderID, Order order) {
+		this.orderlist.put(orderID, order);
+	}
+
+	public static void main(String[] args) throws IOException {
+
+		// Initialize database with items and suppliers.
+
+		ShopApp s = new ShopApp();
+		s.inventory.setItemList(s.fileMgr.getItems());
+		s.setSupplierList(s.fileMgr.getSupplierList());
+
+		s.Menu();
+		System.out.println("Quitting");
+
+		return;
+
+		// setFilename
+		// this.setInventory(new ShopDatabase(fileMgr.getItems()));
+
+	}
+
+}

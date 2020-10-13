@@ -1,0 +1,111 @@
+package BackEnd;
+
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+public class ShopDatabase {
+
+	public LinkedHashSet<Item> itemList;
+
+	public ShopDatabase() {
+		this.itemList = new LinkedHashSet<Item>();
+	}
+
+	public void listAllItems() {
+
+		System.out.format("+-----------------+---------+----------+-----------+%n");
+		System.out.format("| Tool Name       | Tool ID | Quantity | Price ($) |%n");
+		System.out.format("+-----------------+---------+----------+-----------+%n");
+
+		for (Item i : this.itemList) {
+			System.out.println(i);
+		}
+		System.out.format("+-----------------+---------+----------+-----------+%n");
+	}
+
+	public void setItemList(LinkedHashSet<Item> i) {
+		this.itemList = i;
+	}
+
+	public void addItem(String itemName) {
+
+	}
+
+	public void deleteItem(String itemName) {
+
+	}
+
+	public void editItem(String itemName) {
+
+	}
+	public void checkQty(String input) {
+		Iterator<Item> itr = this.itemList.iterator();
+		int intID = Integer.parseInt(input);
+		while (itr.hasNext()) {
+			Item tool = itr.next();
+			if (input.matches("-?\\d+") == true) {
+				if (tool.getToolID() == intID) {
+					System.out.format("Current Quantity of %s is %d \n", tool.getToolName(), tool.getQty());
+					break;
+				}
+			} else if (tool.getToolName().compareTo(input) == 0) {
+				System.out.format("Current Quantity of %s is %d \n", tool.getToolName(), tool.getQty());
+				break;
+			}
+		}
+	}
+
+	public void decreaseItem(String input) {
+		Iterator<Item> itr = this.itemList.iterator();
+		int intID = Integer.parseInt(input);
+		while (itr.hasNext()) {
+			Item tool = itr.next();
+			if (input.matches("-?\\d+") == true) {
+				if (tool.getToolID() == intID) {
+					tool.setQty(tool.getQty()-1);
+					this.checkQty(input);
+					break;
+				}
+			} else if (tool.getToolName().compareTo(input) == 0) {
+				tool.setQty(tool.getQty()-1);
+				this.checkQty(input);
+				break;
+			}
+		}
+	}
+
+	public void searchByName(String itemName) {
+		Iterator<Item> itr = this.itemList.iterator();
+
+		while (itr.hasNext()) {
+			Item tool = itr.next();
+			if (tool.getToolName().toLowerCase().strip().compareTo(itemName.toLowerCase().strip()) == 0) {
+				System.out.format("+-----------------+---------+----------+-----------+%n");
+				System.out.format("| Tool Name       | Tool ID | Quantity | Price ($) |%n");
+				System.out.format("+-----------------+---------+----------+-----------+%n");
+				System.out.println(tool);
+				return;
+			}
+		}
+		System.out.println("Tool not found. Returning to menu <<");
+		return;
+
+	}
+
+	public void searchByID(String ID) {
+		Iterator<Item> itr = this.itemList.iterator();
+		int intID = Integer.parseInt(ID);
+		while (itr.hasNext()) {
+			Item tool = itr.next();
+			if (tool.getToolID() == intID) {
+				System.out.format("+-----------------+---------+----------+-----------+%n");
+				System.out.format("| Tool Name       | Tool ID | Quantity | Price ($) |%n");
+				System.out.format("+-----------------+---------+----------+-----------+%n");
+				System.out.println(tool);
+				return;
+			}
+		}
+		System.out.println("Tool not found. Returning to menu <<");
+		return;
+	}
+}

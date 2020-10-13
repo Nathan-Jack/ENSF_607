@@ -1,0 +1,78 @@
+package BackEnd;
+
+import java.io.*;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Scanner;
+
+public class FileManager {
+
+	private String[][] data;
+	private String filename;
+	
+	public FileManager() {
+		
+	}
+	
+	/**
+	 * loadsData from txt file into obj as arrays of strings
+	 * 
+	 * @throws IOException throws exception if file not found or unopenable
+	 */
+	private void loadData() throws IOException {
+
+		LinkedList<String[]> rows = new LinkedList<String[]>(); // dynamic list size for csv input
+		
+		String filename = this.filename;
+		String dataRow;
+
+		FileInputStream inputStream = null;
+		Scanner sc = null;
+
+		try {
+			inputStream = new FileInputStream(filename);
+			sc = new Scanner(inputStream, "UTF-8");
+
+			while (sc.hasNextLine()) {
+				dataRow = (sc.nextLine());
+				rows.addLast(dataRow.split(";"));
+
+			}
+			// close input streams
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+			if (sc != null) {
+				sc.close();
+			}
+		}
+
+		this.data = rows.toArray(new String[rows.size()][]);
+
+	}
+	
+	/**
+	 * Creates set Items based on txt input. Items are compared based on Item ids. 
+	 * @return		LinkedHashSet of Item objects from array of strings created in loadData.
+	 * @throws 		IOException if load data fails
+	 * @see			Item Hashcode() and equals() Override
+	 */
+	public LinkedHashSet<Item> getItems() throws IOException{
+		
+		this.loadData();
+		LinkedHashSet<Item> itemList = new LinkedHashSet<Item>();
+		
+		for (String[] item : this.data){
+			Item temp = new Item(Integer.parseInt(item[0]), item[1],Integer.parseInt(item[2]),Double.parseDouble(item[3]),item[4]);
+			itemList.add(temp);
+		}
+		
+		return itemList;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	
+}

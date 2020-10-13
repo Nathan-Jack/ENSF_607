@@ -1,0 +1,67 @@
+package courseRegistration;
+
+public class Registration {
+
+	private Student theStudent;
+	private Offering theOffering;
+	private char grade;
+
+	public boolean register(Student theStudent, Offering theOffering) {
+		
+		for(Registration r : theStudent.getRegList()) {
+			if(r.getTheOffering().getTheCourse().equals(this.getTheOffering().getTheCourse())) {}
+			return false;
+		}
+		setTheStudent(theStudent);
+		setTheOffering(theOffering);
+		addRegistration();
+		
+		return true
+	}
+
+	private void addRegistration() {
+
+		boolean s = theStudent.addRegistration(this);
+		boolean o = theOffering.addRegistration(this);
+
+	}
+
+	public Student getTheStudent() {
+		return theStudent;
+	}
+
+	public void setTheStudent(Student theStudent) {
+		this.theStudent = theStudent;
+	}
+
+	public Offering getTheOffering() {
+		return theOffering;
+	}
+
+	public void setTheOffering(Offering theOffering) {
+		this.theOffering = theOffering;
+	}
+
+	public char getGrade() {
+		return grade;
+	}
+
+	public void setGrade(char grade) {
+		this.grade = grade;
+	}
+
+	@Override
+	/**
+	 * Registration objects are to be compared to other registrations using Student IDs.
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof Registration) {
+			Registration r = (Registration) obj;
+			if (r != null && this.getTheStudent().getStudentId() == r.getTheStudent().getStudentId() && this.getTheOffering().getSectionNum() == r.getTheOffering().getSectionNum() && this.getTheOffering().getTheCourse().equals(r.getTheOffering().getTheCourse())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+}

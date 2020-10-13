@@ -1,0 +1,56 @@
+package BackEnd;
+
+import java.io.*;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Scanner;
+
+public class FileManager {
+
+	private String[][] data;
+	
+	public FileManager(String filename) throws IOException {
+
+		LinkedList<String[]> rows = new LinkedList<String[]>(); // dynamic list size for csv input
+
+		String dataRow;
+
+		FileInputStream inputStream = null;
+		Scanner sc = null;
+
+		try {
+			inputStream = new FileInputStream(filename);
+			sc = new Scanner(inputStream, "UTF-8");
+
+			while (sc.hasNextLine()) {
+				dataRow = (sc.nextLine());
+				rows.addLast(dataRow.split(";"));
+
+			}
+			// close input streams
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+			if (sc != null) {
+				sc.close();
+			}
+		}
+
+		this.data = rows.toArray(new String[rows.size()][]);
+
+	}
+	
+	public LinkedHashSet<Item> getItems(){
+		
+		LinkedHashSet<Item> itemList = new LinkedHashSet<Item>();
+		
+		for (String[] item : this.data){
+			Item temp = new Item(Integer.parseInt(item[0]), item[1],Integer.parseInt(item[2]),Double.parseDouble(item[3]),item[4]);
+			itemList.add(temp);
+		}
+		
+		return itemList;
+	}
+	
+}

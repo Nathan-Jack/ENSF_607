@@ -1,0 +1,48 @@
+package tree;
+
+import java.util.Arrays;
+
+public class TreeApp {
+	public static void main (String [] args) {
+		
+		System.out.println("Tree App");
+		
+		StudentTree myTree = new StudentTree();
+		
+		myTree.insert(myTree.getRoot(),new StudentNode ("Sarah", 10));
+		myTree.insert(myTree.getRoot(),new StudentNode ("Bob", 5));
+		myTree.insert(myTree.getRoot(),new StudentNode ("Sam", 2));
+		myTree.insert(myTree.getRoot(),new StudentNode ("Joe", 27));
+		
+		myTree.insert(myTree.getRoot(),new StudentNode ("a", 17));
+		myTree.insert(myTree.getRoot(),new StudentNode ("b", 12));
+		myTree.insert(myTree.getRoot(),new StudentNode ("c", 20));
+		
+		myTree.printPostOrder();
+		
+		System.out.println("Searching for things... \n");
+		int val = 0;
+		try {
+			
+			for (int i : Arrays.asList(10,2,17,11) ) {
+				val = i;
+				System.out.println(myTree.search(myTree.getRoot(),i).getId() + " exists in the Tree" );
+			}
+		}
+		catch(NullPointerException e) {
+			System.out.println(val + " does not exist in the tree" );
+		}
+		
+		
+		System.out.println("Deleting things... \n");
+		
+		myTree.delete(myTree.getRoot(),20 );
+		
+		/*System.out.println(myTree.getRoot());
+		System.out.println(myTree.getRoot().getLeft());
+		System.out.println(myTree.getRoot().getRight());*/
+		
+		myTree.printPostOrder();
+	}
+
+}

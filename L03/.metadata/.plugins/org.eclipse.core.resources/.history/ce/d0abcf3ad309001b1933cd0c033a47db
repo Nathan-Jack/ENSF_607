@@ -1,0 +1,48 @@
+package BackEnd;
+
+public class Supplier {
+
+	private String supplierID;
+	private String companyName;
+	private String address;
+	private String salesContact;
+	
+	public Supplier(String supplierID, String companyName, String address, String salesContact) {
+		this.setSupplierID(supplierID);
+		this.setCompanyName(companyName);
+		this.setAddress(address);
+		this.setSalesContact(salesContact);
+	}
+	
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getSalesContact() {
+		return salesContact;
+	}
+	public void setSalesContact(String salesContact) {
+		this.salesContact = salesContact;
+	}
+
+	public String getSupplierID() {
+		return supplierID;
+	}
+
+	public void setSupplierID(String supplierID) {
+		this.supplierID = supplierID;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	
+	
+	
+}

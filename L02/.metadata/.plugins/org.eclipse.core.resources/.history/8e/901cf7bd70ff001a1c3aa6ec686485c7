@@ -1,0 +1,53 @@
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Player {
+	public String name;
+	public char letter;
+	public Board board;
+	private Player opponent;
+
+	public Player(String name, char letter) {
+		this.name = name;
+		this.letter = letter;
+	}
+
+	public void setBoard(Board theBoard) {
+		this.board = theBoard;
+	}
+
+	public void setOpponent(Player player) {
+		this.opponent = player;
+	}
+
+	public void play() throws NumberFormatException, IOException {
+		while (this.board.isFull() == false && this.board.oWins() == false && this.board.xWins() == false) {
+			this.board.display();
+			this.makeMove();
+			this.board.display();
+			this.opponent.makeMove();
+			this.board.display();
+		}
+		if (this.board.isFull() == true) {
+			System.out.println("Cats Game");
+		} else if (this.board.oWins() == true) {
+			System.out.println(this.opponent.name + " is the winner!");
+		} else if (this.board.xWins() == true) {
+			System.out.println(this.name + " is the winner!");
+		}
+
+	}
+
+	public void makeMove() throws NumberFormatException, IOException {
+		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println(this.name + ", enter the row for your next " + this.letter);
+		int row = Integer.parseInt(stdin.readLine());
+		System.out.println(this.name + ", enter the column for your next " + this.letter);
+		int col = Integer.parseInt(stdin.readLine());
+		this.board.addMark(row, col, this.letter);
+
+	}
+
+}

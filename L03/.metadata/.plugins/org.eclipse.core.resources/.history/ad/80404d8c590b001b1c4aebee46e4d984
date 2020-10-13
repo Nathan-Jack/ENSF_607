@@ -1,0 +1,84 @@
+package courseRegistration;
+
+import java.util.ArrayList;
+
+public class Offering {
+
+	private int sectionNum;
+	private int sectionCap;
+	private Course theCourse;
+
+	private ArrayList<Registration> studentList; // student list
+
+	public Offering(int sectionNum, int sectionCap) {
+		setSectionNum(sectionNum);
+		setSectionCap(sectionCap);
+		studentList = new ArrayList<Registration>();
+	}
+
+	public void addRegistration(Registration reg) {
+		if (this.getStudentList().contains(reg) == false) {
+			if (this.getStudentList().size() < this.getSectionCap()) {
+				studentList.add(reg);
+			} else {
+				System.out.println("This course is full, registration failed.");
+				return;
+			}
+
+			if (this.getStudentList().size() < 8) {
+				System.out.println("This course requires min 8 students to be offered in the next semester. Current #: "
+						+ this.getStudentList().size());
+				return;
+			}
+		} else {
+			System.out.println("Student already registered in this course.");
+			return;
+		}
+	}
+
+	public int getSectionNum() {
+		return sectionNum;
+	}
+
+	public void setSectionNum(int sectionNum) {
+		this.sectionNum = sectionNum;
+	}
+
+	public int getSectionCap() {
+		return sectionCap;
+	}
+
+	public void setSectionCap(int sectionCap) {
+		this.sectionCap = sectionCap;
+	}
+
+	public Course getTheCourse() {
+		return theCourse;
+	}
+
+	public void setTheCourse(Course theCourse) {
+		this.theCourse = theCourse;
+	}
+
+	public ArrayList<Registration> getStudentList() {
+		return studentList;
+	}
+
+	public void setStudentList(ArrayList<Registration> studentList) {
+		this.studentList = studentList;
+	}
+
+	@Override
+	public String toString() {
+		String st = "";
+		st += String.format("+-----------------+---------+----------+-----------+%n");
+		st += "Section Number: " + sectionNum + ", Section cap: " + sectionCap + "\n";
+		st += "Students in this section are:\n\n";
+		for (Registration r : this.getStudentList()) {
+			st += r.getTheStudent().getStudentName() + ", Grade: " + r.getGrade();
+			st += "\n\n";
+		}
+		return st;
+	}
+
+}

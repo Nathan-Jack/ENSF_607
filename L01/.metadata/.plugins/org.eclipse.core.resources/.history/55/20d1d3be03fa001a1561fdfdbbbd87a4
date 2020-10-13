@@ -1,0 +1,245 @@
+package tree;
+
+public class StudentTree {
+
+	private StudentNode root;
+
+	public StudentTree() {
+		setRoot(null);
+	}
+
+	public StudentNode insert(StudentNode cursor, StudentNode node) {
+
+		if (node == null)
+			return node;
+
+		int key = node.getId();
+		// making sure both left and right of the node are null
+		node.setLeft(null);
+		node.setRight(null);
+
+		if (root == null) // if new tree set new node as root.
+			root = node;
+		else {
+			// Start with the root and look for a spot to insert
+			// i.e. Traverse the tree and look for the proper spot to insert node
+			// Question: insert to the left or right?
+			// Do normal BST insertion
+			if (key < cursor.getId())
+				cursor.setLeft(insert(cursor.getLeft(), node));
+			else if (key > node.getId())
+				cursor.setRight(insert(cursor.getRight(), node));
+			else // Duplicate keys not allowed
+				return cursor;
+
+			// UPDATE HEIGHT OF THE CURRENT NODE
+			cursor.setHeight(1 + max(cursor.getLeft().getHeight(), cursor.getRight().getHeight()));
+
+			int balance = getBalance(cursor);
+
+			// Left Left Case
+			if (balance > 1 && getBalance(cursor.getLeft()) >= 0)
+				return rightRotate(cursor);
+
+			// Left Right Case
+			if (balance > 1 && getBalance(cursor.getLeft()) < 0) {
+				cursor.left = leftRotate(cursor.getLeft());
+				return rightRotate(cursor);
+			}
+
+			// Right Right Case
+			if (balance < -1 && getBalance(cursor.getRight()) <= 0)
+				return leftRotate(cursor);
+
+			// Right Left Case
+			if (balance < -1 && getBalance(cursor.getRight()) > 0) {
+				cursor.right = rightRotate(cursor.getRight());
+				return leftRotate(cursor);
+			}
+
+			// return the (unchanged) node pointer
+			// return node;
+			return cursor;
+		}
+		return cursor;
+
+	}
+
+	public void printPreOrder() {
+		TraversePreOrder(getRoot());
+	}
+
+	public void printInOrder() {
+		TraverseInOrder(getRoot());
+	}
+
+	public void printPostOrder() {
+		TraversePostOrder(getRoot());
+	}
+
+	private void TraversePreOrder(StudentNode cursor) { // Node, left subtree, right subtree
+
+		if (cursor != null) {
+			System.out.println(cursor);
+			TraverseInOrder(cursor.getLeft());
+			TraverseInOrder(cursor.getRight());
+		}
+	}
+
+	private void TraverseInOrder(StudentNode cursor) { // Nodes in ascending order
+
+		if (cursor != null) {
+
+			TraverseInOrder(cursor.getLeft());
+			System.out.println(cursor);
+			TraverseInOrder(cursor.getRight());
+		}
+	}
+
+	private void TraversePostOrder(StudentNode cursor) { // Left, right, node
+		if (cursor != null) {
+
+			TraverseInOrder(cursor.getLeft());
+			TraverseInOrder(cursor.getRight());
+			System.out.println(cursor);
+		}
+	}
+
+	public StudentNode search(StudentNode cursor, int key) {
+		// To be completed by Students!
+		// Completed -NJ
+		if (cursor == null || cursor.getId() == key)
+			return cursor;
+		if (key < cursor.getId())
+			return search(cursor.getLeft(), key);
+
+		return search(cursor.getRight(), key);
+	}
+
+	public StudentNode delete(StudentNode cursor, int key) {
+
+		// To be completed by students!
+		// first you have to search for the key
+
+		// recursive call to find node to delete while maintaining path to root.
+		if (cursor == null) // if key not in tree or tree only has one node
+			return cursor;
+
+		// If the key to be deleted is smaller than
+		// the root's key, then it lies in left subtree
+		if (key < cursor.getId())
+			cursor.setLeft(delete(cursor.getLeft(), key));
+
+		// If the key to be deleted is greater than the
+		// root's key, then it lies in right subtree
+		else if (key > cursor.getId())
+			cursor.setRight(delete(cursor.getRight(), key));
+
+		else {
+			// delete has three cases, no children, one child, two children.
+
+			// single or no child node
+			if ((cursor.getLeft() == null) || (cursor.getRight() == null)) {
+				StudentNode temp = null;
+				if (temp == cursor.getLeft()) // null
+					temp = cursor.getRight();
+				else
+					temp = cursor.getLeft();
+
+				// No child case (leaf node)
+				if (temp == null) {
+					temp = cursor;
+					cursor = null; // delete current node
+				} else // One child case
+					cursor = temp; // Copy the contents of the non-empty child, overwriting value to be deleted.
+			} else {
+				// two children: find the smallest node in subtree below to take place
+				// of deleted node
+				StudentNode temp = minValueNode(cursor.getRight());
+
+				// Copy the min value node data to current
+				cursor.setId(temp.getId());
+
+				// Delete the leaf node at the bottom of the tree chosen by minValueNode.
+				cursor.setRight(delete(cursor.getRight(), temp.getId()));
+			}
+		}
+
+		if (cursor == null) // if key not in tree or tree only has one node
+			return cursor;
+
+		// for AVL Tree add balancing and rotation calls here. other wise return cursor
+		return cursor;
+		// here you delete!
+
+	}
+
+	public StudentNode minValueNode(StudentNode node) {
+		StudentNode cursor = node;
+
+		// find smallest value in subtree passed.
+		while (cursor.getLeft() != null)
+			cursor = cursor.getLeft();
+
+		return cursor;
+	}
+
+	// Max between two integers ()
+	public int max(int a, int b) {
+		if (a < b)
+			return a;
+		else
+			return b;
+	}
+
+	// Right rotates subtree with root at y
+	public StudentNode rightRotate(StudentNode y) {
+		StudentNode x = y.getLeft();
+		StudentNode temp = x.getRight();
+
+		// Do the rotation
+		x.setRight(y);
+		y.setLeft(temp);
+
+		// Update heights
+		y.setHeight(max(y.getLeft().getHeight(), y.getRight().getHeight()) + 1);
+		x.setHeight(max(x.getLeft().getHeight(), x.getRight().getHeight()) + 1);
+
+		// Return new root
+		return x;
+	}
+
+	// Left rotates subtree with root at x
+	public StudentNode leftRotate(StudentNode x) {
+		StudentNode y = x.getRight();
+		StudentNode temp = y.getLeft();
+
+		// Perform rotation
+		y.setLeft(x);
+		x.setRight(temp);
+
+		// Update heights
+		x.setHeight(max(x.getLeft().getHeight(), x.getRight().getHeight()) + 1);
+		y.setHeight(max(y.getLeft().getHeight(), y.getRight().getHeight()) + 1);
+	
+		// Return new root
+		return y;
+	}
+
+	// Get Balance factor of passed node
+	public int getBalance(StudentNode node) {
+		if (node == null)
+			return 0;
+
+		return (node.getLeft().getHeight() - node.getRight().getHeight());
+	}
+
+	public StudentNode getRoot() {
+		return root;
+	}
+
+	public void setRoot(StudentNode root) {
+		this.root = root;
+	}
+
+}

@@ -1,0 +1,2 @@
+INDEX VERSION 1.131+/Users/nathanjack/Desktop/ENSF 607 Moshi/Assignments/L00/.metadata/.plugins/org.eclipse.jdt.core
+2946766110.index

@@ -1,0 +1,37 @@
+package BackEnd;
+
+import java.util.LinkedHashSet;
+
+public class ShopDatabase {
+
+	public LinkedHashSet<Item> itemList;
+	
+	
+	public ShopDatabase(LinkedHashSet<Item> itemList) {
+		this.setItemList(itemList);
+	}
+
+	
+	private void setItemList(LinkedHashSet<Item> i) {
+		this.itemList = i;
+	}
+
+
+	public void addItem(String itemName) {
+		
+	}
+	
+	public void deleteItem(String itemName) {
+		
+	}
+	
+	public void editItem(String itemName) {
+		
+	}
+	
+	public Item SearchDB(String itemName) {
+		
+		return null;
+	}
+	
+}
