@@ -3,6 +3,18 @@ package courseRegistration;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+//This is my "FrontEnd!"
+/**
+* Lab 3 Exercise 2 Code Student Class
+* 
+* @author Nathan Jack
+* @version 1.0
+* @since Oct 13th, 2020
+* 
+*        Sources: Code requirements from assignment
+* 
+*        Description: Handles student interactions with registrations. 
+*/
 public class Student {
 
 	private String studentName;

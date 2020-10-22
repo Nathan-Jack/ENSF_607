@@ -3,6 +3,19 @@ package courseRegistration;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Lab 3 Exercise 2 Code Course Catalog
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Oct 13th, 2020
+ * 
+ *        Sources: Code requirements from assignment
+ * 
+ *        Description: Aggregration of courses. Can search/Add/and print
+ *        courses. Also creates course offerings. Delete function not yet
+ *        implemented.
+ */
 public class CourseCat {
 
 	private ArrayList<Course> courseList;
@@ -40,16 +53,15 @@ public class CourseCat {
 		for (Course c : courseList) {
 			if (c.getCourseName().toLowerCase().strip().equals(courseName.toLowerCase().strip())) {
 				foundCourses.add(c);
-			}	
+			}
 		}
 		if (foundCourses.size() == 0) {
 			System.err.println("Couse " + courseName + " " + " does NOT exist!");
 			return null;
 		}
-		
+
 		return foundCourses;
-		
-		
+
 	}
 
 	public Course searchCat(String courseName, int courseNum) {

@@ -1,7 +1,17 @@
 package courseRegistration;
 
 import java.util.ArrayList;
-
+/**
+* Lab 3 Exercise 2 Code Course Class
+* 
+* @author Nathan Jack
+* @version 1.0
+* @since Oct 13th, 2020
+* 
+*        Sources: Code requirements from assignment
+* 
+*        Description: BAse code from D2L. Added equals override for hash set comparisons.
+*/
 public class Course {
 
 	private String courseName;
@@ -71,8 +81,6 @@ public class Course {
 		}
 		return false;
 	}
-
-
 
 	@Override
 	public String toString() {

@@ -1,0 +1,132 @@
+package courseRegistration;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+/**
+* Lab 3 Exercise 2 Code Student Class
+* 
+* @author Nathan Jack
+* @version 1.0
+* @since Oct 13th, 2020
+* 
+*        Sources: Code requirements from assignment
+* 
+*        Description: Handles student interactions with registrations. 
+*/
+public class Student {
+
+	private String studentName;
+	private int studentId;
+	private ArrayList<Registration> regList; // list of course sections
+
+	public Student(String studentName, int studentId) {
+		setStudentName(studentName);
+		setStudentId(studentId);
+		setRegList(new ArrayList<Registration>());
+	}
+
+	public void registerForCourse(CourseCat cat, String courseName, int courseNum, int section) {
+		Course myCourse = cat.searchCat(courseName, courseNum);
+		
+		if (myCourse != null && this.getRegList().size() < 7 && section > 0
+				&& section <= myCourse.getOfferingList().size()) {
+			Offering theOffering = myCourse.getOfferingList().get(section - 1);
+			Registration reg = new Registration();
+			reg.register(this, theOffering);
+			if (this.getRegList().contains(reg)==true) {
+				System.out.println(
+						"Registration for " + myCourse.getCourseName() + " " + myCourse.getCourseNum() + " complete!\n");
+			}else if (myCourse != null && this.getRegList().contains(reg)==false) {
+				System.out.println(
+						"Registration for " + myCourse.getCourseName() + " " + myCourse.getCourseNum() + " failed!\n");
+			}
+			return;
+		} else if (myCourse != null && regList.size() >= 6) {
+			System.out.println(this.getStudentName() + " is already registered in 6 courses, cannot add another course\n");
+			return;
+		} else {
+			System.out.println("Course/Section does not exist\n");
+			return;
+		}
+	}
+
+	public void listAllCourses() {
+		System.out.println("Current list of courses for " + this.getStudentName() + ":\n");
+		if (this.getRegList().size() > 0) {
+			for (Registration r : this.getRegList()) {
+				System.out.println(r.getTheOffering().getTheCourse().getCourseName() + " "
+						+ r.getTheOffering().getTheCourse().getCourseNum() + " Section "
+						+ r.getTheOffering().getSectionNum() + "\n");
+			}
+		} else {
+			System.out.println(this.getStudentName() + " is not registed in any courses.");
+			return;
+		}
+	}
+
+	public void removeReg(CourseCat cat, String courseName, int courseNum) {
+		Course myCourse = cat.searchCat(courseName, courseNum);
+		if (myCourse != null) {
+			int flag = 0;
+			for (Iterator<Registration> iterator = this.getRegList().iterator(); iterator.hasNext();) {
+				Registration r = iterator.next();
+				if (r.getTheOffering().getTheCourse().getCourseName().compareTo(myCourse.getCourseName()) == 0
+						&& r.getTheOffering().getTheCourse().getCourseNum() == myCourse.getCourseNum()) {
+					iterator.remove();
+					r.getTheOffering().removeReg(r);
+					r.setTheOffering(null);
+					r.setTheStudent(null);
+					System.out.println("Course Removed!");
+					flag = 1;
+				}
+			}
+
+			if (flag == 0) {
+				System.out.println("System could not remove course. returning to menu");
+			}
+		}
+	}
+
+	public String getStudentName() {
+		return studentName;
+	}
+
+	public void setStudentName(String studentName) {
+		this.studentName = studentName;
+	}
+
+	public int getStudentId() {
+		return studentId;
+	}
+
+	public void setStudentId(int studentId) {
+		this.studentId = studentId;
+	}
+
+	public ArrayList<Registration> getRegList() {
+		return regList;
+	}
+
+	public void setRegList(ArrayList<Registration> regList) {
+		this.regList = regList;
+	}
+
+	private boolean validateReg(Registration reg) {
+		if (this.getRegList().contains(reg) == false
+				&& reg.getTheOffering().getStudentList().size() < reg.getTheOffering().getSectionCap()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public void addRegistration(Registration registration) {
+		if (this.validateReg(registration) == true) {
+			regList.add(registration);
+			return;
+		}
+		return;
+
+	}
+}
