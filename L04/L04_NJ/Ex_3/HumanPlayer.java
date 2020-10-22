@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Lab 4 Code
@@ -10,11 +12,11 @@ import java.io.IOException;
  *        Sources: Code base from D2L
  *        
  *        Description:
- *        Plays a mark on a random empty tile until the game ends.
+ *         Human player. allows for input from keyboard.
  */
-class RandomPlayer extends Player {
+class HumanPlayer extends Player {
 
-	protected RandomPlayer(String name, char letter) {
+	protected HumanPlayer(String name, char letter) {
 		super(name, letter);
 		// TODO Auto-generated constructor stub
 	}
@@ -54,26 +56,37 @@ class RandomPlayer extends Player {
 
 	}
 
-	@Override
 	/**
-	 * Chooses a random board tile until an empty cell is found.
+	 * Prompts user for input. Checks input for range validity. not for type. Add
+	 * char if space is empty, otherwise recursively calls self and restarts turn
+	 * for player without changing board
 	 * 
 	 * @throws NumberFormatException for parseInt
 	 * @throws IOException           for IO input with bufferedreader for human
 	 *                               players only.
 	 */
 	protected void makeMove() throws NumberFormatException, IOException {
-		RandomGenerator randy = new RandomGenerator();
-		int row = randy.discrete(0, 2); // rando choose row
-		int col = randy.discrete(0, 2); // rando choose col
-		char current = this.board.getMark(row, col);
+		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println(this.name + ", enter the row for your next " + this.letter);
+		int row = Integer.parseInt(stdin.readLine());
 
-		while (current != SPACE_CHAR) { // re-select cell if chosen cell is already full
-			row = randy.discrete(0, 2);
-			col = randy.discrete(0, 2);
-			current = this.board.getMark(row, col);
+		System.out.println(this.name + ", enter the column for your next " + this.letter);
+		int col = Integer.parseInt(stdin.readLine());
+
+		if (0 > row || row > 2 || 0 > col || col > 2) {
+			System.out.println("Please enter a valid cell.");
+			this.makeMove();
+		} else {
+
+			char current = this.board.getMark(row, col);
+
+			if (current == SPACE_CHAR) {
+				this.board.addMark(row, col, this.letter);
+			} else {
+				System.out.println("Please enter a valid cell.");
+				this.makeMove();
+			}
 		}
-		System.out.println(this.getClass() + " " + this.name + " choose: " + row + ", " + col + "\n");
-		this.board.addMark(row, col, this.letter);
 	}
+
 }
