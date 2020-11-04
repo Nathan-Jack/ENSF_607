@@ -1,10 +1,16 @@
+import java.io.Serializable;
 
 /**
  *   A simple class that represents a music record
  *
  */
-class MusicRecord
+class MusicRecord implements Serializable
 	{
+		/**
+	 * 
+	 */
+	//private static final long serialVersionUID = 8743454622122541051L;
+	private static final long serialVersionUID = 1;
 		private int year_recorded;
 		private String songName;
 		private String singerName;

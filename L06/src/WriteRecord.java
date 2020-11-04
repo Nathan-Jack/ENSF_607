@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -46,8 +47,14 @@ public class WriteRecord {
 	 * @param textFileName name of text file to open
 	 */
 	public void openFileInputStream(String textFileName) {
-        
-     // TO BE COMPLETED BY THE STUDENTS
+		
+		try {
+			textFileIn = new Scanner (new FileInputStream(textFileName));
+			
+		} catch (FileNotFoundException e) {
+			System.err.println( "Error opening file." );
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -56,7 +63,15 @@ public class WriteRecord {
 	 */
 	public void openObjectOutputStream(String objectFileName) {
         
-    // TO BE COMPLETED BY THE STUDENTS
+		try {
+			objectOut = new ObjectOutputStream(new FileOutputStream(objectFileName));
+		} catch (FileNotFoundException e) {
+			System.err.println( "File not found." );
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println( "Error opening file." );
+			e.printStackTrace();
+		}
         
 	}
 	
@@ -66,7 +81,8 @@ public class WriteRecord {
 	 * file and serializes each record object into a binary file
 	 */
 	public void createObjectFile() {
-
+		
+		
 		while (textFileIn.hasNext()) // loop until end of text file is reached
 		{
 			int year = Integer.parseInt(textFileIn.nextLine());
@@ -81,13 +97,25 @@ public class WriteRecord {
 			double price = Double.parseDouble(textFileIn.nextLine());
 			System.out.println(price + "  ");    // echo data read from text file
             
-			setRecord(year, songName, singerName, price);
+			MusicRecord temp = new MusicRecord(year, songName, singerName, price);
 			textFileIn.nextLine();   // read the dashed lines and do nothing
             
-            // THE REST OF THE CODE TO BE COMPLETED BY THE STUDENTS
+			try {
+				objectOut.writeObject(temp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 
-		// YOUR CODE GOES HERE
+		try {
+			objectOut.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void main(String[] args) throws IOException {
