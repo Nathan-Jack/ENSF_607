@@ -5,7 +5,14 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-
+/**
+ * Lab 06 Code Exercise 1
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Nov 4, 2020
+ * 
+ */
 public class Server {
 	private BufferedReader socketInput;
 	private PrintWriter socketOutput;
@@ -13,7 +20,8 @@ public class Server {
 	private Socket aSocket;
 
 	/**
-	 * Construct a Server with Port 8099
+	 * Construct a Server with Port 8099, display that server is running to user.
+	 * Source code pulled from notes and dateServer exercise 2 code.
 	 */
 	public Server() {
 		try {
@@ -27,9 +35,9 @@ public class Server {
 	}
 
 	/**
-	 * Get input from Client.
+	 * Get input from Client socket input and validate if string is a palindrome or not.
 	 * 
-	 * @throws IOException
+	 * @throws IOException if read-in is interrupted or invalid in anyway
 	 */
 	public void getUserInput() throws IOException {
 		StringBuffer line = null;
@@ -38,7 +46,7 @@ public class Server {
 			if (line != null) {
 		        StringBuilder reverseLine = new StringBuilder();
 		        reverseLine.append(line);
-		        reverseLine = reverseLine.reverse();
+		        reverseLine = reverseLine.reverse(); // using built in stringbuilder reverse function to compare strings quickly.
 				
 				if (line.toString().equals("QUIT")) {
 					socketOutput.println("Server shutdown.");
