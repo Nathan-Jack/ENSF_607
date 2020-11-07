@@ -111,6 +111,7 @@ public class WriteRecord {
 
 		try {
 			objectOut.close();
+			textFileIn.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,6 +135,6 @@ public class WriteRecord {
                                                   // write music records into it
         
 		d.createObjectFile();   // read records from opened text file, and write
-                                // them into the object file.
+								// them into the object file.
 	}
 }

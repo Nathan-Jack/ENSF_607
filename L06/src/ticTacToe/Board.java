@@ -1,0 +1,244 @@
+package ticTacToe;
+
+import java.io.Serializable;
+
+/**
+ * Exercise 4 Code
+ * 
+ * @author Nathan Jack
+ * @version 1.1
+ * @since Oct 19, 2020
+ * 
+ *        Sources: Code base from D2L Description Board class, contains all
+ *        methods for building and displaying the grid for play. Handles adding
+ *        marks, checking cells for current mark, counting total marks, deciding
+ *        victor
+ */
+public class Board implements Constants,Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private char theBoard[][];
+	private int markCount;
+
+	/**
+	 * Creates 9 tile 3x3 board for tic tac toe.
+	 */
+	public Board() {
+		markCount = 0;
+		theBoard = new char[3][];
+		for (int i = 0; i < 3; i++) {
+			theBoard[i] = new char[3];
+			for (int j = 0; j < 3; j++)
+				theBoard[i][j] = SPACE_CHAR;
+		}
+	}
+
+	/**
+	 * Returns mark from specified cell index
+	 * 
+	 * @param row row index integer
+	 * @param col col index integer
+	 * @return Returns X/O/SPACE_CHAR of type char
+	 */
+	public char getMark(int row, int col) {
+		return theBoard[row][col];
+	}
+
+	/**
+	 * Checks internal count, if board is full return true.
+	 * 
+	 * @return boolean
+	 */
+	public boolean isFull() {
+		return markCount == 9;
+	}
+
+	/**
+	 * Method to check if Xplayer has won
+	 * 
+	 * @return returns true if check winner returns 1
+	 */
+	public boolean xWins() {
+		if (checkWinner(LETTER_X) == 1)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Method to check if Oplayer has won
+	 * 
+	 * @return returns true if check winner returns 1
+	 */
+	public boolean oWins() {
+		if (checkWinner(LETTER_O) == 1)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Displays current board
+	 */
+	public void display() {
+		displayColumnHeaders();
+		addHyphens();
+		for (int row = 0; row < 3; row++) {
+			addSpaces();
+			System.out.print("    row " + row + ' ');
+			for (int col = 0; col < 3; col++)
+				System.out.print("|  " + getMark(row, col) + "  ");
+			System.out.println("|");
+			addSpaces();
+			addHyphens();
+		}
+	}
+
+	/**
+	 * Adds char to cell
+	 * 
+	 * @param row  index integer
+	 * @param col  index integer
+	 * @param mark players char
+	 */
+	public void addMark(int row, int col, char mark) {
+
+		theBoard[row][col] = mark;
+		markCount++; // 9 total cells. Check to ensure game ends after 9th cell.
+	}
+
+	/**
+	 * clears entire board.
+	 */
+	public void clear() {
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				theBoard[i][j] = SPACE_CHAR;
+		markCount = 0;
+	}
+
+	/**
+	 * Checks current board for win condition (3 of same char in a row
+	 * vert/horiz/diag)
+	 * 
+	 * @param mark player char
+	 * @return returns 1 or 0
+	 */
+	int checkWinner(char mark) {
+		int row, col;
+		int result = 0;
+
+		for (row = 0; result == 0 && row < 3; row++) {
+			int row_result = 1;
+			for (col = 0; row_result == 1 && col < 3; col++)
+				if (theBoard[row][col] != mark)
+					row_result = 0;
+			if (row_result != 0)
+				result = 1;
+		}
+
+		for (col = 0; result == 0 && col < 3; col++) {
+			int col_result = 1;
+			for (row = 0; col_result != 0 && row < 3; row++)
+				if (theBoard[row][col] != mark)
+					col_result = 0;
+			if (col_result != 0)
+				result = 1;
+		}
+
+		if (result == 0) {
+			int diag1Result = 1;
+			for (row = 0; diag1Result != 0 && row < 3; row++)
+				if (theBoard[row][row] != mark)
+					diag1Result = 0;
+			if (diag1Result != 0)
+				result = 1;
+		}
+		if (result == 0) {
+			int diag2Result = 1;
+			for (row = 0; diag2Result != 0 && row < 3; row++)
+				if (theBoard[row][3 - 1 - row] != mark)
+					diag2Result = 0;
+			if (diag2Result != 0)
+				result = 1;
+		}
+		return result;
+	}
+
+	/**
+	 * utility method for display
+	 */
+	void displayColumnHeaders() {
+		System.out.print("          ");
+		for (int j = 0; j < 3; j++)
+			System.out.print("|col " + j);
+		System.out.println();
+	}
+
+	/**
+	 * utility method for display
+	 */
+	void addHyphens() {
+		System.out.print("          ");
+		for (int j = 0; j < 3; j++)
+			System.out.print("+-----");
+		System.out.println("+");
+	}
+
+	/**
+	 * utility method for display
+	 */
+	void addSpaces() {
+		System.out.print("          ");
+		for (int j = 0; j < 3; j++)
+			System.out.print("|     ");
+		System.out.println("|");
+	}
+	@Override
+	public String toString() {
+		StringBuilder board = new StringBuilder();
+		board.append("BOARD\n");
+		// displayColumnHeaders
+		board.append("          ");
+		for (int j = 0; j < 3; j++)
+			board.append("|col " + j);
+		board.append("\n");
+		
+		// add hyphens
+		board.append("          ");
+		for (int j = 0; j < 3; j++)
+			board.append("+-----");
+		board.append("+"+"\n");
+		
+		for (int row = 0; row < 3; row++) {
+			//add spaces
+			
+			board.append("          ");
+			for (int j = 0; j < 3; j++)
+				board.append("|     ");
+			board.append("|"+"\n");
+			
+			board.append("    row " + row + ' ');
+			for (int col = 0; col < 3; col++)
+				board.append("|  " + getMark(row, col) + "  ");
+			board.append("|"+"\n");
+
+			//add spaces
+			board.append("          ");
+			for (int j = 0; j < 3; j++)
+				board.append("|     ");
+			board.append("|"+"\n");
+			
+			// add hyphens
+			board.append("          ");
+			for (int j = 0; j < 3; j++)
+				board.append("+-----");
+			board.append("+"+"\n");
+		}
+		
+		return board.toString();
+		
+	}
+}
