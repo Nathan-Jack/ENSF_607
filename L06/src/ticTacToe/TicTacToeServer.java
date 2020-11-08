@@ -71,6 +71,7 @@ public class TicTacToeServer implements Constants {
 				
 				players[i] = this.create_player(values[0], MARKS[i], Integer.parseInt(values[1]),aSocket);
 				System.out.println("Player " + players[i].name + " connected\n");
+				players[i].socketOut.println(players[i].letter); // signal to players that match can begin
 			}
 
 			catch (IOException ioException) {
@@ -79,8 +80,6 @@ public class TicTacToeServer implements Constants {
 			}
 		}
 		
-		players[0].socketOut.println(players[0].letter); // signal to players that match can begin
-		players[1].socketOut.println(players[1].letter); // signal to players that match can begin
 		// create a new game on the server with players
 		Game game = new Game(players, socketIn, socketOut);
 		

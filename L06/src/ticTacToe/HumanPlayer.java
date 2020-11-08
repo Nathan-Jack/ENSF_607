@@ -90,7 +90,7 @@ class HumanPlayer extends Player {
 	protected void makeMove() throws NumberFormatException, IOException {
 		this.socketOut.flush();
 		this.socketOut.println("MOVE\n"); // prompt client for action
-		String move = this.socketIn.readLine(); // read in move
+		String move = this.socketIn.readLine(); // read in move 
 		
 		
 		String[] values = move.split(",");
