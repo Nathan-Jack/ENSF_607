@@ -4,12 +4,26 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * Lab 06 Code Exercise 1
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Nov 4, 2020
+ * 
+ *        Sources: Code base from D2L Description: Simple client class to check and return palindromes using a server connection.
+ */
 public class Client {
 	private PrintWriter socketOut;
 	private Socket palinSocket;
 	private BufferedReader stdIn;
 	private BufferedReader socketIn;
 
+	/**
+	 * Client constructor. Sets input and outputs sockets as well as connection to server.
+	 * @param serverName
+	 * @param portNumber
+	 */
 	public Client(String serverName, int portNumber) {
 		try {
 			palinSocket = new Socket(serverName, portNumber);
@@ -22,6 +36,9 @@ public class Client {
 		}
 	}
 
+	/**
+	 * Main running loop. Prints true or false message to server if passed string is or isn't a palindrome.
+	 */
 	public void communicate()  {
 
 		String line = "";

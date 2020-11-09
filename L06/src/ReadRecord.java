@@ -2,8 +2,17 @@
 /** 
  * Started by M. Moussavi
  * March 2015
- * Completed by: STUDENT(S) NAME
+ * Completed by: Nathan Jack
+ * 
+ * Lab 06 Code Exercise 3
+ * 
+ * @author Nathan Jack
+ * @version 1.0
+ * @since Nov 4, 2020
+ * 
+ * Reads objects from binary file. Requires filename with correct file path.
  */
+ 
 
 import java.io.EOFException;
 import java.io.FileInputStream;
@@ -70,7 +79,7 @@ public class ReadRecord {
 
 	public static void main(String[] args) {
 		ReadRecord d = new ReadRecord();
-		//d.readObjectsFromFile("mySongs.ser");
+		d.readObjectsFromFile("mySongs.ser");
 		d.readObjectsFromFile("allSongs.ser");
 	}
 }

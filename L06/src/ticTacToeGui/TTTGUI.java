@@ -29,8 +29,15 @@ public class TTTGUI extends Composite {
 	public String board;
 	public String lastMove = "";
 
+	/**
+	 * Static method to create gui object.
+	 * 
+	 * @param client client entity. Gui must have a client host in order to play
+	 *               game.
+	 * @return returns built gui.
+	 */
 	public static TTTGUI buildGUI(TicTacToeGUIClient client) {
-		Display display = new Display();
+		Display display = new Display(); // requried for swt applications.
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(1, false));
 		TTTGUI gui = new TTTGUI(shell, SWT.None);
@@ -41,29 +48,26 @@ public class TTTGUI extends Composite {
 		return gui;
 	}
 
-	// main operation loop of the gui. throws IO exception if game loop in
-	// communicate throws one.
-	public void run() throws IOException {
+	// main operation loop of the gui. Runs game loop inside main gui loop continuously.
+	public void run() {
 
 		this.shell.pack();
 		this.shell.open();
 		while (!this.shell.isDisposed()) {
-			if (!this.display.readAndDispatch()) { // if there are no commands to respond to
+			if (!this.display.readAndDispatch()) { // if there are no commands to respond to sleep.
 				this.display.sleep();
 			}
 
-			controller.startClientLoop();
+			controller.startClientLoop(); // starts a thread for the client game loop. Allows gui and client to run at the same time. only one client thread allowed.
 
 		}
-		// }
 		this.display.dispose();
-		controller.client.closeSocket();
-
+		controller.client.closeSocket(); // if Gui is closed, close all client sockets.
 
 	}
 
 	/**
-	 * Create the composite.
+	 * Create swt composite/gui window. All gui element locations are relative to other component locations.
 	 * 
 	 * @param parent
 	 * @param style
@@ -74,7 +78,7 @@ public class TTTGUI extends Composite {
 		setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		setLayout(new FormLayout());
 
-		this.initializebuttons();
+		this.initializebuttons(); // creates grid buttons
 
 		namePrompt = new Text(this, SWT.BORDER | SWT.READ_ONLY | SWT.CENTER);
 		FormData fd_namePrompt = new FormData();
@@ -142,6 +146,9 @@ public class TTTGUI extends Composite {
 
 	}
 
+	/**
+	 * Creates button grid for game.
+	 */
 	public void initializebuttons() {
 
 		int size = 60;
@@ -158,7 +165,7 @@ public class TTTGUI extends Composite {
 
 				buttons[i * 3 + j] = new Button(this, SWT.NONE);
 				buttons[i * 3 + j].setEnabled(false);
-				buttons[i * 3 + j].setText(" ");
+				buttons[i * 3 + j].setText(" "); // should use constants space char here.
 				buttons[i * 3 + j].setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_SELECTION_TEXT));
 				FormData fd_button0 = new FormData();
 				fd_button0.top = new FormAttachment(0, offsets[0]);
@@ -167,12 +174,17 @@ public class TTTGUI extends Composite {
 				fd_button0.right = new FormAttachment(0, offsets[3]);
 				buttons[i * 3 + j].setLayoutData(fd_button0);
 
-				buttons[i * 3 + j].addSelectionListener(new gridButtonListener());
+				buttons[i * 3 + j].addSelectionListener(new gridButtonListener()); // connect button to event handling.
 
 			}
 		}
 	}
 
+	/**
+	 * grid button event handling. Button clicks change button text to player char and then toggle turn.
+	 * @author nathanjack
+	 *
+	 */
 	private class gridButtonListener implements SelectionListener {
 
 		@Override
@@ -184,22 +196,24 @@ public class TTTGUI extends Composite {
 			int tempcol = ((idx) % 3);
 			int temprow = (int) Math.ceil((idx) / 3);
 			String move = temprow + "," + tempcol;
-			
-			setBoard();
-			lastMove = move;
 
-			// controller.startClientLoop();
-			// client.startLoop(); // begins game loop
+			setBoard();
+			lastMove = move; // Last move havaing a value set triggers the client loop to stop sleeping and continue. lastmove is set back to "" after move is complete.
 			toggleTurn();
-			// swap turn here?
+
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent arg0) {
-			// do nothing.
+			// do nothing. required by interface but not used.
 		}
 	}
 
+	/**
+	 * Listens for enter key on name input. Sets name for client.
+	 * @author nathanjack
+	 *
+	 */
 	private class enterListener implements TraverseListener {
 
 		@Override
@@ -209,7 +223,7 @@ public class TTTGUI extends Composite {
 				String name = textInput.getText();
 				serverDisplay.append("\nName set to: " + name + "\n"); // update server display message
 				if (controller.client.connected == true) {
-					textInput.setEnabled(false); // accept no more input after name.
+					textInput.setEnabled(false); // accept no more input after name set
 					controller.client.setName(name);
 					controller.client.getOut().println(name + "," + 1 + "\n");
 				}
@@ -217,6 +231,11 @@ public class TTTGUI extends Composite {
 		}
 	}
 
+	/**
+	 * Connect to server button listener. Requires name set before connection. Requires server be available to connect.
+	 * @author nathanjack
+	 *
+	 */
 	private class serverButtonListener implements SelectionListener {
 
 		@Override
@@ -238,7 +257,7 @@ public class TTTGUI extends Composite {
 					serverDisplay.append("\nWaiting for opponent...");
 					controller.client.setChar();
 					if (playerChar == 'X') {
-						startButton.setEnabled(true);
+						startButton.setEnabled(true); // Xplayer gets first turn.
 					}
 					return;
 				} catch (UnknownHostException e1) { // server address incorrect
@@ -250,16 +269,21 @@ public class TTTGUI extends Composite {
 				}
 
 			}
-			// controller.startClientLoop();
+
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent arg0) {
-			// do nothing.
+			// do nothing. required by interface but not used.
 		}
 
 	}
 
+	/**
+	 * Start button event handling. Starts player turn and disables self after press.
+	 * @author nathan jack
+	 *
+	 */
 	private class startButtonListener implements SelectionListener {
 
 		@Override
@@ -269,7 +293,6 @@ public class TTTGUI extends Composite {
 				if (playerChar == 'X') {
 					startButton.setEnabled(false);
 					toggleTurn();
-					// controller.startClientLoop();
 				}
 				return;
 			} else {
@@ -285,16 +308,23 @@ public class TTTGUI extends Composite {
 
 	}
 
+	/**
+	 * Updates button text based on passed string from server. Sets current players lastmove to "" to signal that the other player has made there move.
+	 * @param BOARD
+	 */
 	public void updateBoard(String BOARD) {
 		int i = 0;
 		for (char s : BOARD.toCharArray()) {
-			this.buttons[i].setText(s + ""); 
+			this.buttons[i].setText(s + "");
 			i++;
 		}
 		this.lastMove = "";
 		this.setBoard();
 	}
 
+	/**
+	 * Sets class board object to current button grid contents.
+	 */
 	public void setBoard() {
 		char[][] tempboard = new char[3][3];
 		for (int j = 0; j < 3; j++) {
@@ -308,6 +338,10 @@ public class TTTGUI extends Composite {
 
 	}
 
+	/**
+	 * Turn the game grid on or off for player turn. Does not allow previously pressed buttons to be pressed again.
+	 * @param t boolean for grid state.
+	 */
 	public void toggleGrid(boolean t) {
 		for (Button b : this.buttons) {
 			final String[] buttonText = new String[1];
@@ -321,11 +355,14 @@ public class TTTGUI extends Composite {
 			if (buttonText[0].equals(" ")) // should use constants space char here
 				this.display.syncExec(() -> b.setEnabled(t));
 			else {
-				this.display.syncExec(() -> b.setEnabled(false));
+				this.display.syncExec(() -> b.setEnabled(false)); // Buttons already played cannot be played again.
 			}
 		}
 	}
 
+	/**
+	 * toggles turn boolean and allows or disallows grid.
+	 */
 	public void toggleTurn() {
 		this.myTurn = !this.isMyTurn();
 		toggleGrid(isMyTurn());

@@ -1,7 +1,10 @@
 package ticTacToeGui;
 
-import java.io.IOException;
-
+/**
+ * GUI controller. Allows for gui and client thread to run concurrently.
+ * @author nathan jack
+ *
+ */
 public class GUIController {
 
 	TTTGUI gui;
@@ -17,33 +20,25 @@ public class GUIController {
 
 	public void startGui() {
 		gui.setController(this);
-		try {
-			gui.run();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		gui.run();
 	}
 
+	/**
+	 * Creates new thread for client loop, runs once for each client.
+	 */
 	public void startClientLoop() {
 
 		if (!loopStarted) {
-		Thread clientThread = new Thread() {
-			public void run() {
-				client.startLoop();
-			}
-		};
-		
+			Thread clientThread = new Thread() {
+				public void run() {
+					client.startLoop();
+				}
+			};
+
 			clientThread.start();
 			loopStarted = true;
-			//try {
-				//clientThread.join();
-			//} catch (InterruptedException e) {
-				//System.out.println("it fucked upt here");
-				//e.printStackTrace();
-			//}
 		}
-		
+
 	}
 
 }

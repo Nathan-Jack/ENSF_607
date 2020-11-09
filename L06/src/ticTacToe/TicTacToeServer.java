@@ -7,15 +7,19 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
+/**
+* Lab 06 Code Exercise 4/5
+* 
+* @author Nathan Jack
+* @version 1.0
+* @since Nov 4, 2020
+* 
+* Creates a game server for every two clients that join. Allows GUI clients and console clients. Creates a new thread for each game.
+*/
 public class TicTacToeServer implements Constants {
 
 	private final Player[] players; // array of Players
@@ -24,18 +28,17 @@ public class TicTacToeServer implements Constants {
 	private BufferedReader socketIn;// input from client
 	private PrintWriter socketOut; // output to client
 	private final static char[] MARKS = { LETTER_X, LETTER_O }; // array of marks
-	private int currentPlayer; // keeps track of player with current move
-	private final static int PLAYER_X = 0; // constant for first player
-	private final static int PLAYER_O = 1; // constant for second player
 	private final ExecutorService runGame; // will run players
 
+	/**
+	 * Build server on localhost server address. Outputs to screen that server is
+	 * running
+	 */
 	public TicTacToeServer() {
 
 		players = new Player[2]; // create array of players
-		currentPlayer = PLAYER_X; // set current player to first player
-
 		// create ExecutorService with a thread for each player
-		runGame = Executors.newFixedThreadPool(2);
+		runGame = Executors.newCachedThreadPool();
 
 		try {
 			server = new ServerSocket(9090, 0, InetAddress.getByName("localhost")); // set up ServerSocket
@@ -46,7 +49,7 @@ public class TicTacToeServer implements Constants {
 		}
 	}
 
-	// wait for two connections so game can be played
+	// waits for two connections so game can be played. Allows any number of games to be played at one time.
 	public void execute() {
 
 		// wait for each client to connect
@@ -65,13 +68,14 @@ public class TicTacToeServer implements Constants {
 				System.out.println("Connecting to player...");
 				socketIn = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
 				socketOut = new PrintWriter(aSocket.getOutputStream(), true);
-				
-				String line = socketIn.readLine();
+
+				String line = socketIn.readLine(); // gets player name and player char from client connection.
 				String[] values = line.split(",");
-				
-				players[i] = this.create_player(values[0], MARKS[i], Integer.parseInt(values[1]),aSocket);
+
+				players[i] = this.create_player(values[0], MARKS[i], Integer.parseInt(values[1]), aSocket);
 				System.out.println("Player " + players[i].name + " connected\n");
-				players[i].socketOut.println(players[i].letter); // signal to players that match can begin
+				players[i].socketOut.println(players[i].letter); // signal to players that match can begin. starts
+																	// client internal game loops.
 			}
 
 			catch (IOException ioException) {
@@ -79,25 +83,36 @@ public class TicTacToeServer implements Constants {
 				System.exit(1);
 			}
 		}
-		
+
 		// create a new game on the server with players
 		Game game = new Game(players, socketIn, socketOut);
-		
+
 		runGame.execute(game);
-		
-		while(game.GAMEOVER) {
-		try {
-			runGame.awaitTermination(200, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		while (game.GAMEOVER) {
+			try {
+				runGame.awaitTermination(200, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("Game Ended, Looking for new Players\n");
 		}
-		System.out.println("Game Ended, Looking for new Players\n");}
-		
-		this.execute();
+
+		this.execute(); // sever continuously looks for players after game completes.
 	}
 
-	private Player create_player(String name, char mark, int player_type, Socket socket) throws IOException {
+	/**
+	 * 
+	 * @param name        Player name
+	 * @param mark        Player mark
+	 * @param player_type Always human for this use case. Functionality to play
+	 *                    against non human player not yet implemented.
+	 * @param socket      Socket for player to connect to. Unique to each player and
+	 *                    thread.
+	 * @return 			  Returns created player linked to correct socket.
+	 */
+	private Player create_player(String name, char mark, int player_type, Socket socket) {
 
 		Player result = null;
 		switch (player_type) {
@@ -117,7 +132,6 @@ public class TicTacToeServer implements Constants {
 			System.out.print("\nDefault case in switch should not be reached.\n" + "  Program terminated.\n");
 			System.exit(0);
 		}
-		// result.setBoard(board);
 		return result;
 	}
 

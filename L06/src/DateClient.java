@@ -19,7 +19,7 @@ public class DateClient {
 	private BufferedReader socketIn;
 
 	/**
-	 * Creates a client built to send and receive froma date server.
+	 * Creates a client built to send and receive from a date server.
 	 * Source code base pulled from Exercise 1 client code.
 	 * @param serverName
 	 * @param portNumber

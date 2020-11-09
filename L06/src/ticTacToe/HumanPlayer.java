@@ -1,20 +1,18 @@
 package ticTacToe;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
- * Lab 4 Code
+ * Lab 6 Code
  * 
  * @author Nathan Jack
- * @version 1.1
- * @since Oct 19, 2020
+ * @version 1.2
+ * @since Nov 6th, 2020
  * 
  *        Sources: Code base from D2L
  * 
- *        Description: Human player. allows for input from keyboard.
+ *        Description: Human player. allows for input from keyboard and gui.
  */
 class HumanPlayer extends Player {
 
@@ -71,7 +69,7 @@ class HumanPlayer extends Player {
 			}
 
 			this.socketOut.println(this.board.toString());
-			this.opponent.socketOut.println("SWAP");
+			this.opponent.socketOut.println("SWAP"); // added for gui client application.
 			this.opponent.socketOut.println(this.board.toString());
 			
 			this.opponent.play(); // needs to print to server that its the other players turn.
