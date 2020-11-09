@@ -69,13 +69,15 @@ class HumanPlayer extends Player {
 					this.opponent.socketOut.println(res);
 				}
 			}
-			
+
 			this.socketOut.println(this.board.toString());
-			//this.opponent.socketOut.println(this.board.toString());
-			this.opponent.play();
+			this.opponent.socketOut.println("SWAP");
+			this.opponent.socketOut.println(this.board.toString());
+			
+			this.opponent.play(); // needs to print to server that its the other players turn.
 
 		}
-		this.socketOut.println(this.board.toString());
+		this.socketOut.println(this.board.toString()); // show board after game is over
 	}
 
 	/**
@@ -90,8 +92,9 @@ class HumanPlayer extends Player {
 	protected void makeMove() throws NumberFormatException, IOException {
 		this.socketOut.flush();
 		this.socketOut.println("MOVE\n"); // prompt client for action
-		String move = this.socketIn.readLine(); // read in move 
+		// breaking here?
 		
+		String move = this.socketIn.readLine(); // read in move // waits for client action
 		
 		String[] values = move.split(",");
 		

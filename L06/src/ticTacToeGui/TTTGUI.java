@@ -3,6 +3,8 @@ package ticTacToeGui;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.swt.SWT;
@@ -19,11 +21,13 @@ public class TTTGUI extends Composite {
 	private Button startButton;
 	private Text serverDisplay;
 	private Text serverDisplayTitle;
-	private TicTacToeGUIClient client;
+	private GUIController controller;
 	private Display display;
 	private Shell shell;
 	private char playerChar;
 	private boolean myTurn = false;
+	public String board;
+	public String lastMove = "";
 
 	public static TTTGUI buildGUI(TicTacToeGUIClient client) {
 		Display display = new Display();
@@ -33,23 +37,29 @@ public class TTTGUI extends Composite {
 
 		gui.shell = shell;
 		gui.display = display;
-		gui.client = client;
+		gui.setController(client.getController());
 		return gui;
 	}
 
 	// main operation loop of the gui. throws IO exception if game loop in
 	// communicate throws one.
-	public static void run(TTTGUI gui) throws IOException {
-		gui.shell.pack();
-		gui.shell.open();
-		while (!gui.shell.isDisposed()) {
-			if (!gui.display.readAndDispatch()) { // if there are no commands to respond to
+	public void run() throws IOException {
 
-				gui.display.sleep();
+		this.shell.pack();
+		this.shell.open();
+		while (!this.shell.isDisposed()) {
+			if (!this.display.readAndDispatch()) { // if there are no commands to respond to
+				this.display.sleep();
 			}
 
+			controller.startClientLoop();
+
 		}
-		gui.display.dispose();
+		// }
+		this.display.dispose();
+		controller.client.closeSocket();
+
+
 	}
 
 	/**
@@ -174,6 +184,14 @@ public class TTTGUI extends Composite {
 			int tempcol = ((idx) % 3);
 			int temprow = (int) Math.ceil((idx) / 3);
 			String move = temprow + "," + tempcol;
+			
+			setBoard();
+			lastMove = move;
+
+			// controller.startClientLoop();
+			// client.startLoop(); // begins game loop
+			toggleTurn();
+			// swap turn here?
 		}
 
 		@Override
@@ -190,10 +208,10 @@ public class TTTGUI extends Composite {
 				Text textInput = (Text) e.getSource(); //
 				String name = textInput.getText();
 				serverDisplay.append("\nName set to: " + name + "\n"); // update server display message
-				if (client.connected == true) {
+				if (controller.client.connected == true) {
 					textInput.setEnabled(false); // accept no more input after name.
-					client.setName(name);
-					client.getOut().println(name + "," + 1 + "\n");
+					controller.client.setName(name);
+					controller.client.getOut().println(name + "," + 1 + "\n");
 				}
 			}
 		}
@@ -209,16 +227,16 @@ public class TTTGUI extends Composite {
 				return;
 			}
 
-			if (client.connected == true) {
+			if (controller.client.connected == true) {
 				serverDisplay.append("Already connected to server.");
 				return;
 			} else {
 				try {
-					client.connectToServer(client.serverAddress);
-					client.setName(nameInput.getText());
+					controller.client.connectToServer(controller.client.serverAddress);
+					controller.client.setName(nameInput.getText());
 					serverDisplay.append("\nConnected to server!");
 					serverDisplay.append("\nWaiting for opponent...");
-					client.setChar();
+					controller.client.setChar();
 					if (playerChar == 'X') {
 						startButton.setEnabled(true);
 					}
@@ -232,6 +250,7 @@ public class TTTGUI extends Composite {
 				}
 
 			}
+			// controller.startClientLoop();
 		}
 
 		@Override
@@ -246,20 +265,14 @@ public class TTTGUI extends Composite {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 
-			if (client.ready) {
+			if (controller.client.ready) {
 				if (playerChar == 'X') {
-					myTurn = true;
+					startButton.setEnabled(false);
+					toggleTurn();
+					// controller.startClientLoop();
 				}
-				display.syncExec(new Runnable() {
-					public void run() {
-						client.startLoop();
-					}
-				});
-
 				return;
-			}
-
-			else {
+			} else {
 				serverDisplay.append("Waiting for opponent");
 				return;
 			}
@@ -272,41 +285,50 @@ public class TTTGUI extends Composite {
 
 	}
 
-	public String getMove(int index) {
-		
-		String res = (playerChar + "," + "row,col");
-
-		return res;
-	}
-
-	public void updateBoard(String[] BOARD) {
-
-		for (String s : BOARD) {
-			this.serverDisplay.append(s); // display to gui console because fuck it
+	public void updateBoard(String BOARD) {
+		int i = 0;
+		for (char s : BOARD.toCharArray()) {
+			this.buttons[i].setText(s + ""); 
+			i++;
 		}
-		this.toggleGrid(true);
+		this.lastMove = "";
+		this.setBoard();
 	}
 
-	public char[][] getBoard() {
-		char[][] board = new char[3][];
-		for (int j = 0; j <3; j++) {
-			for(int i = 0; i <3; i++) {
-				board[i][j] = buttons[i*3+j].getText().charAt(0);
+	public void setBoard() {
+		char[][] tempboard = new char[3][3];
+		for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < 3; i++) {
+				tempboard[i][j] = buttons[(i * 3) + j].getText().charAt(0);
 			}
 		}
-		
-		return board;
+
+		this.board = String
+				.valueOf(Arrays.stream(tempboard).map(String::new).collect(Collectors.joining()).toCharArray());
+
 	}
 
 	public void toggleGrid(boolean t) {
 		for (Button b : this.buttons) {
-			b.setEnabled(t);
+			final String[] buttonText = new String[1];
+			this.getDisplay().syncExec( // you should use sync exec here!
+					new Runnable() {
+						public void run() {
+							buttonText[0] = b.getText();
+						}
+					});
+
+			if (buttonText[0].equals(" ")) // should use constants space char here
+				this.display.syncExec(() -> b.setEnabled(t));
+			else {
+				this.display.syncExec(() -> b.setEnabled(false));
+			}
 		}
 	}
 
-	public void setTurn(boolean b) {
-		this.myTurn = b;
-
+	public void toggleTurn() {
+		this.myTurn = !this.isMyTurn();
+		toggleGrid(isMyTurn());
 	}
 
 	@Override
@@ -320,6 +342,14 @@ public class TTTGUI extends Composite {
 
 	public void setPlayerChar(char playerChar) {
 		this.playerChar = playerChar;
+	}
+
+	public void setController(GUIController controller) {
+		this.controller = controller;
+	}
+
+	public boolean isMyTurn() {
+		return myTurn;
 	}
 
 }
